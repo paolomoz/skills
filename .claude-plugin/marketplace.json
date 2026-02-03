@@ -1,0 +1,11 @@
+{
+  "name": "paolomoz-skills",
+  "owner": {
+    "name": "paolomoz"
+  },
+  "metadata": {
+    "description": "Personal collection of reusable Claude Code skills, extracted from real project work.",
+    "version": "0.1.0"
+  },
+  "plugins": []
+}
