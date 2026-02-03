@@ -15,6 +15,14 @@
       "skills": [
         "./skills/railway-deploy"
       ]
+    },
+    {
+      "name": "content",
+      "description": "Content generation and media production skills",
+      "source": "./",
+      "skills": [
+        "./skills/infographic-video"
+      ]
     }
   ]
 }
