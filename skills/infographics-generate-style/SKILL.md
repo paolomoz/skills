@@ -43,6 +43,8 @@ Read the image files directly (Claude is multimodal). Identify:
 - Background treatments
 - Illustration style (flat, 3D, hand-drawn, photographic, etc.)
 
+**IMPORTANT — Save reference images for generation**: When the user provides images as style references, save 2-4 of the strongest/most representative ones alongside the style definition. These will be passed as `--ref` images during infographic generation, which dramatically improves artistic quality. Reference images give the generation model a concrete visual target that text descriptions alone cannot achieve. Store them in a `references/` subdirectory next to the style file.
+
 ### URLs / websites
 Fetch the page and analyze visual design. Extract same properties as images.
 
@@ -82,10 +84,28 @@ _NAME_OVERRIDES: dict[str, str] = {
 
 Use this template. All sections are important — the full markdown is passed to the LLM during infographic generation.
 
+### CRITICAL: Write for the image generation model, not a design textbook
+
+The style definition is a **prompt** that guides an AI image generator. Every description must be vivid, concrete, and visually evocative — as if you're painting a picture with words. The generation model responds to sensory language, not abstract theory.
+
+**DO — use concrete, evocative descriptions:**
+- "Large bold circles with luminous colored halos radiating outward — pink glow around black, blue aura around yellow"
+- "Sweeping thin black lines shooting diagonally across the entire composition"
+- "Warm cream parchment-toned background with subtle tonal variation — never sterile white"
+- "Faces built from overlapping bold geometric shapes — eyes as concentric colored rings, noses as sharp triangles"
+
+**DON'T — use abstract design theory:**
+- ~~"Pure geometric primitives as foundational shapes"~~ (too abstract, produces flat clip-art)
+- ~~"Asymmetric but rigorously balanced compositions"~~ (design principle, not a visual instruction)
+- ~~"Primary colors assigned to shapes per Kandinsky's theory"~~ (academic reference, not actionable)
+- ~~"Modular, repeatable units assembled into larger structures"~~ (systems thinking, not visual)
+
+The difference is stark: theory-oriented descriptions produce sterile, diagrammatic output. Prompt-oriented descriptions produce expressive, artistic output. Always ask: "Can the model see what I'm describing?" If the answer requires understanding design history, rewrite it.
+
 ```markdown
 # {style-id}
 
-{1-2 sentence description capturing the essence and visual identity of the style.}
+{1-2 sentence description capturing the essence and visual identity of the style. Make it vivid — describe what you SEE, not what design movement it belongs to.}
 
 ## Color Palette
 
@@ -146,6 +166,21 @@ Use this template. All sections are important — the full markdown is passed to
 - {Alignment rules}
 - {What to avoid}
 
+## Anti-Patterns
+
+{Explicit list of what this style must NOT look like. This is critical — it prevents the generation model from falling back to generic defaults.}
+
+- NOT {describe the most likely wrong interpretation}
+- NOT {describe the sterile/corporate version of this style}
+- NOT {describe what a naive prompt would produce}
+- {Include the phrase "This must look like [vivid artistic reference], not [generic fallback]"}
+
+## Reference Images
+
+{If reference images were provided, list them here with brief descriptions of what each contributes to the style definition. These are passed as --ref during generation.}
+
+- `references/{filename}` — {what this image demonstrates about the style}
+
 ## Best For
 
 {Comma-separated list of ideal use cases — this is used by the recommendation engine to match styles to content}
@@ -155,9 +190,21 @@ Use this template. All sections are important — the full markdown is passed to
 
 - **Simple styles** (like `bold-graphic`, `corporate-memphis`): Skip Compositional Patterns and Visual Metaphor Mappings. Keep Visual Elements to 6-8 items. These are styles where the visual identity is immediately obvious and the LLM needs less guidance.
 - **Mid-complexity styles** (like `technical-schematic`): Include Variants and detailed Visual Elements. Add Compositional Patterns if the style has specific ways of handling different content types.
-- **Rich styles** (like `art-nouveau`, `ukiyo-e`): Include all sections. These styles have deep visual vocabularies that benefit from explicit mapping.
+- **Rich/artistic styles** (like `art-nouveau`, `ukiyo-e`, `bauhaus`): Include ALL sections, especially Anti-Patterns and Reference Images. These styles have deep visual vocabularies and are most prone to falling flat without vivid prompt language. For these styles, always include the Anti-Patterns section — it's the difference between getting a sterile diagram vs. expressive art.
 
 The right level depends on how much ambiguity the LLM would face. A style like "pixel art" is self-explanatory; a style like "ukiyo-e" needs compositional guidance to avoid generic results.
+
+### Writing effective Visual Elements
+
+Each bullet in Visual Elements should pass the **"can you see it?"** test. Compare:
+- Bad: "Dynamic diagonal compositions" → vague, the model doesn't know what to draw
+- Good: "Sweeping thin black lines shooting diagonally across the entire canvas, creating tension between curved arcs and sharp angles" → the model can render this
+
+Specific patterns that produce strong results:
+- Describe **color interactions**: "pink glow radiating around black circles", not "accent colors"
+- Describe **surface quality**: "warm cream parchment background with subtle tonal variation", not "off-white background"
+- Describe **how figures are built**: "faces constructed from overlapping triangles and circles — eyes as concentric colored rings", not "geometric figure constructions"
+- Describe **what NOT to render**: "never sterile white", "not clip-art", "not a flat corporate diagram"
 
 ---
 
@@ -169,6 +216,19 @@ After writing the file:
 2. **Review the H1** — must match the filename stem exactly (e.g., `# adobe-slide` in `adobe-slide.md`).
 3. **Review section headings** — must use `## Color Palette`, `## Best For` exactly (the loader regex depends on these).
 4. **Read back the file** to verify formatting.
+
+## Step 5: Test with Reference Images
+
+For rich/artistic styles, always do a test generation using reference images. This catches issues that only surface at generation time.
+
+1. **Select 2-4 reference images** that best represent the style's range (e.g., for Bauhaus: a Kandinsky composition, an architectural poster, a geometric portrait, a mosaic pattern).
+2. **Generate a test infographic** using the new style definition + `--ref` images with simple content.
+3. **Compare** the output against the reference images. Common failure modes:
+   - **Too flat/sterile**: The Visual Elements section uses abstract theory instead of vivid descriptions. Rewrite with concrete, sensory language.
+   - **Too generic**: The Anti-Patterns section is missing or weak. Add explicit "NOT a flat corporate diagram" type instructions.
+   - **Wrong color mood**: The Color Palette describes colors by name only. Add emotional/sensory qualities ("warm cream parchment", "dense velvety black", "luminous colored halos").
+   - **Lifeless figures**: People/characters described generically. Add specific construction details ("eyes as concentric colored rings, nose as sharp triangle, hair as sweeping arcs").
+4. **Iterate** — update the style definition based on test results and regenerate until the output matches the artistic intent of the references.
 
 ---
 
