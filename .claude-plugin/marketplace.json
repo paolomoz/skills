@@ -21,7 +21,8 @@
       "description": "Content generation and media production skills",
       "source": "./",
       "skills": [
-        "./skills/infographic-video"
+        "./skills/infographic-video",
+        "./skills/infographics-generate-style"
       ]
     }
   ]
