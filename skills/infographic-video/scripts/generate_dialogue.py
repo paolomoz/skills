@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate dialogue audio for meeting recap video using ElevenLabs TTS.
+"""Generate dialogue audio for meeting recap video using ElevenLabs Text-to-Dialogue API.
 
 Usage:
     python3 generate_dialogue.py <dialogue.json> <output-audio-dir> [--voices Alex=VOICE_ID,Jordan=VOICE_ID]
@@ -16,6 +16,9 @@ The dialogue.json file should have this structure:
         }
     ]
 }
+
+Uses the Text-to-Dialogue API (POST /v1/text-to-dialogue) which produces a single
+audio file per section with natural turn-taking and pacing between speakers.
 """
 
 import argparse
@@ -24,7 +27,6 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 import requests
@@ -32,79 +34,52 @@ from dotenv import load_dotenv
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
 DEFAULT_VOICES = {
-    "Alex": "CwhRBWXzGAHq8TQ4Fs17",    # Roger — male, laid-back, resonant
-    "Jordan": "FGY2WhTYpPnrIDTdsKH5",   # Laura — female, energetic, quirky
+    "Alex": "L0Dsvb3SLTyegXwtm47J",    # Archer — conversational, warm male guide
+    "Jordan": "kdmDKE6EkgrWrrykO9Qt",   # Alexandra — realistic, chatty female reactor
 }
 
-MODEL_ID = "eleven_multilingual_v2"
-TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-SILENCE_MS = 350
+DIALOGUE_URL = "https://api.elevenlabs.io/v1/text-to-dialogue"
+MODEL_ID = "eleven_v3"
 
 
-# ── TTS Generation ─────────────────────────────────────────────────────────────
-def generate_speech(text: str, voice_id: str, output_path: Path, api_key: str) -> None:
-    """Call ElevenLabs TTS and save audio to output_path."""
-    clean_text = re.sub(r"\[.*?\]\s*", "", text)
+# ── Audio Generation ──────────────────────────────────────────────────────────
+def generate_dialogue_audio(
+    dialogue: list, voices: dict, output_path: Path, api_key: str
+) -> None:
+    """Call ElevenLabs Text-to-Dialogue API for a section's dialogue.
+
+    Sends all turns for a section in one request. The API returns a single
+    audio file with natural pacing between speakers.
+    """
+    inputs = []
+    for turn in dialogue:
+        speaker = turn["speaker"]
+        text = re.sub(r"\[.*?\]\s*", "", turn["text"])
+        voice_id = voices.get(speaker)
+        if not voice_id:
+            print(f"    WARNING: No voice for '{speaker}', skipping turn")
+            continue
+        inputs.append({
+            "text": text,
+            "voice_id": voice_id,
+        })
 
     resp = requests.post(
-        TTS_URL.format(voice_id=voice_id),
+        DIALOGUE_URL,
         headers={
             "xi-api-key": api_key,
             "Content-Type": "application/json",
             "Accept": "audio/mpeg",
         },
         json={
-            "text": clean_text,
+            "inputs": inputs,
             "model_id": MODEL_ID,
-            "voice_settings": {
-                "stability": 0.50,
-                "similarity_boost": 0.75,
-                "style": 0.30,
-            },
         },
-        timeout=60,
+        timeout=120,
     )
     resp.raise_for_status()
     output_path.write_bytes(resp.content)
     print(f"    Generated: {output_path.name} ({len(resp.content) / 1024:.1f} KB)")
-
-
-def generate_silence(path: Path, duration_ms: int) -> None:
-    """Generate a silent MP3 of given duration."""
-    subprocess.run(
-        [
-            "ffmpeg", "-y", "-f", "lavfi",
-            "-i", f"anullsrc=r=44100:cl=stereo",
-            "-t", str(duration_ms / 1000),
-            "-c:a", "libmp3lame", "-q:a", "2",
-            str(path),
-        ],
-        capture_output=True,
-        check=True,
-    )
-
-
-def concatenate_audio(parts: list, silence_path: Path, output: Path) -> None:
-    """Concatenate audio files with silence gaps using ffmpeg concat demuxer."""
-    list_path = output.parent / f"_concat_{output.stem}.txt"
-    with open(list_path, "w") as f:
-        for i, part in enumerate(parts):
-            f.write(f"file '{part}'\n")
-            if i < len(parts) - 1:
-                f.write(f"file '{silence_path}'\n")
-
-    subprocess.run(
-        [
-            "ffmpeg", "-y", "-f", "concat", "-safe", "0",
-            "-i", str(list_path),
-            "-ar", "44100", "-ac", "2",
-            "-c:a", "libmp3lame", "-q:a", "2",
-            str(output),
-        ],
-        capture_output=True,
-        check=True,
-    )
-    list_path.unlink(missing_ok=True)
 
 
 def get_duration(audio_path: Path) -> float:
@@ -157,12 +132,9 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
-    print("  ElevenLabs Dialogue Generator")
+    print("  ElevenLabs Text-to-Dialogue Generator")
+    print("  Two-host conversation (Alex & Jordan)")
     print("=" * 60)
-
-    # Pre-generate a silence clip for reuse
-    silence_path = args.output_dir / "_silence.mp3"
-    generate_silence(silence_path, SILENCE_MS)
 
     total_duration = 0.0
 
@@ -172,34 +144,17 @@ def main():
         output_path = args.output_dir / f"{name}.mp3"
 
         print(f"\n  Section: {name}")
+        print(f"  Turns: {len(dialogue)}")
         print(f"  {'─' * 40}")
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp = Path(tmpdir)
-            parts = []
-
-            for i, turn in enumerate(dialogue):
-                speaker = turn["speaker"]
-                text = turn["text"]
-                voice_id = voices.get(speaker)
-                if not voice_id:
-                    print(f"    WARNING: No voice ID for speaker '{speaker}', skipping")
-                    continue
-                part_path = tmp / f"{i:02d}-{speaker.lower()}.mp3"
-                generate_speech(text, voice_id, part_path, api_key)
-                parts.append(part_path)
-
-            concatenate_audio(parts, silence_path, output_path)
+        generate_dialogue_audio(dialogue, voices, output_path, api_key)
 
         duration = get_duration(output_path)
         total_duration += duration
-        print(f"    Output: {output_path.name} ({duration:.1f}s)")
-
-    # Cleanup
-    silence_path.unlink(missing_ok=True)
+        print(f"    Duration: {duration:.1f}s")
 
     print(f"\n{'=' * 60}")
-    print(f"  All done! Total audio duration: {total_duration:.1f}s")
+    print(f"  All done! Total audio: {total_duration:.1f}s")
     print(f"  Files in: {args.output_dir}")
     print(f"{'=' * 60}")
 

@@ -1,11 +1,11 @@
 ---
 name: infographic-video
-description: Generates a short video recap from a meeting summary. Splits content into sections, creates infographics, generates two-host dialogue audio via ElevenLabs, and assembles into MP4. Use when user asks to create a "meeting video", "video recap", "video summary", or "meeting recap video".
+description: Generates a short video recap from a meeting summary. Splits content into sections, creates infographics, generates two-host dialogue audio via ElevenLabs Text-to-Dialogue API, and assembles into MP4 with background music. Use when user asks to create a "meeting video", "video recap", "video summary", or "meeting recap video".
 ---
 
 # Meeting Video Generator
 
-Transforms a meeting summary (Markdown) into a short (~5 min) video with infographic visuals and two-host podcast-style dialogue audio.
+Transforms a meeting summary (Markdown) into a short (~5 min) video with infographic visuals, two-host podcast-style dialogue audio, and background music.
 
 ## Pipeline
 
@@ -13,9 +13,9 @@ Transforms a meeting summary (Markdown) into a short (~5 min) video with infogra
 Meeting Summary (.md)
   → Section Splitting (6 sections)
   → Infographic Generation (1 per section, any image gen tool)
-  → Dialogue Scripts (two-host, casual podcast tone)
-  → Audio Generation (ElevenLabs TTS, 2 voices)
-  → Video Assembly (moviepy + ffmpeg → MP4)
+  → Dialogue Scripts (two-host, casual podcast tone, with bridge lines)
+  → Audio Generation (ElevenLabs Text-to-Dialogue API, 2 voices)
+  → Video Assembly (moviepy + background music → MP4)
 ```
 
 ## Script Directory
@@ -28,7 +28,7 @@ Meeting Summary (.md)
 
 ```
 /infographic-video path/to/meeting-summary.md
-/infographic-video path/to/summary.md --sections 6 --voices roger,laura
+/infographic-video path/to/summary.md --sections 6 --voices Alex=ID1,Jordan=ID2
 /infographic-video path/to/summary.md --output video/output/
 ```
 
@@ -38,7 +38,7 @@ Meeting Summary (.md)
 |--------|-------------|---------|
 | `--sections <n>` | Number of content sections | `6` |
 | `--output <dir>` | Output directory for all artifacts | `meeting/` |
-| `--voices <a,b>` | ElevenLabs voice IDs (host-a,host-b) | Roger, Laura |
+| `--voices <a,b>` | Voice mapping: `Name=ID,Name=ID` | Archer, Alexandra |
 | `--host-names <a,b>` | Display names for the two hosts | `Alex, Jordan` |
 | `--aspect` | Infographic aspect ratio | `landscape` (16:9) |
 | `--lang` | Language for all text content | `en` |
@@ -48,8 +48,8 @@ Meeting Summary (.md)
 
 | Tool | Purpose | Install |
 |------|---------|---------|
-| `ffmpeg` | Audio concat, video encoding | `brew install ffmpeg` |
-| `moviepy` | Video composition, crossfades | `pip3 install moviepy` |
+| `ffmpeg` | Audio probing, video encoding | `brew install ffmpeg` |
+| `moviepy` | Video composition, crossfades, music mixing | `pip3 install moviepy` |
 | `requests` | ElevenLabs API calls | `pip3 install requests` |
 | `python-dotenv` | Load API keys from `.env` | `pip3 install python-dotenv` |
 | `Pillow` | Title/outro card generation | `pip3 install Pillow` |
@@ -66,8 +66,10 @@ Infographic images can be generated with any image generation tool available to 
 
 | Host | Voice | Voice ID | Character |
 |------|-------|----------|-----------|
-| Alex | Roger | `CwhRBWXzGAHq8TQ4Fs17` | Warm male, laid-back narrator/guide |
-| Jordan | Laura | `FGY2WhTYpPnrIDTdsKH5` | Energetic female, reactor/questioner |
+| Alex | Archer | `L0Dsvb3SLTyegXwtm47J` | Conversational, warm male guide |
+| Jordan | Alexandra | `kdmDKE6EkgrWrrykO9Qt` | Realistic, chatty female reactor |
+
+Fallback voices if defaults unavailable: Roger (`CwhRBWXzGAHq8TQ4Fs17`), Laura (`FGY2WhTYpPnrIDTdsKH5`).
 
 Run `scripts/list_voices.py` to discover available ElevenLabs voices.
 
@@ -84,7 +86,7 @@ Run `scripts/list_voices.py` to discover available ElevenLabs voices.
 │   └── ...
 ├── audio/
 │   ├── 01-{slug}.mp3                     # Generated dialogue audio
-│   └── ...
+│   └── bgm.mp3                           # Background music (optional)
 ├── dialogue.json                          # Dialogue scripts (agent-generated)
 ├── video-config.json                      # Title/outro card config
 └── output/
@@ -157,7 +159,8 @@ Write casual two-host dialogue for each section and save as `{output}/dialogue.j
       "name": "01-intro",
       "dialogue": [
         {"speaker": "Alex", "text": "Opening line..."},
-        {"speaker": "Jordan", "text": "Reaction..."}
+        {"speaker": "Jordan", "text": "Reaction..."},
+        {"speaker": "Alex", "text": "Bridge to next section..."}
       ]
     }
   ]
@@ -172,8 +175,9 @@ Write casual two-host dialogue for each section and save as `{output}/dialogue.j
 - ~130-160 words per section targeting ~50s audio each
 - Alternate turns between hosts (5-9 turns per section)
 - Use natural emotional cues through word choice (not bracketed directives)
+- **Bridge lines**: Every section except the last must end with a bridge line from Alex previewing the next topic
 
-See `references/dialogue-format.md` for detailed guidelines and examples.
+See `references/dialogue-format.md` for detailed guidelines, bridging examples, and voice configuration.
 
 ### Step 6: Generate Audio
 
@@ -201,16 +205,28 @@ python3 ${SKILL_DIR}/scripts/generate_dialogue.py {output}/dialogue.json {output
 
 **How it works:**
 1. Reads dialogue from the JSON file
-2. For each dialogue turn, calls ElevenLabs TTS
-3. Concatenates turns with 350ms silence gaps using ffmpeg
-4. Outputs one MP3 per section to the audio directory
+2. For each section, sends all dialogue turns to the ElevenLabs Text-to-Dialogue API in a single request
+3. The API returns one audio file per section with natural turn-taking and pacing
+4. No silence gaps or ffmpeg concatenation needed — the API handles pacing natively
 
 **Verification:**
 - Each MP3 should be 40-65s duration
 - Total audio should be under 6 minutes
 - Both voices should be clearly distinguishable
 
-### Step 7: Assemble Video
+### Step 7: Background Music (Optional)
+
+Place a background music MP3 at `{output}/audio/bgm.mp3`. The assembler will automatically:
+- Play music at full volume during the title card (3s)
+- Reduce to 15% volume during dialogue sections
+- Return to full volume during the outro card
+- Fade out over the last 1.5s
+
+If `bgm.mp3` is not present, the video assembles without background music.
+
+**Recommended source:** Pixabay Music (free, no attribution required) — search for corporate/tech presentation background tracks, 1-2 minutes (will be looped automatically).
+
+### Step 8: Assemble Video
 
 Run the video assembly script:
 
@@ -220,15 +236,17 @@ python3 ${SKILL_DIR}/scripts/assemble_video.py {output}/video-config.json {outpu
 
 **How it works:**
 1. Reads card configuration from video-config.json
-2. Generates title and outro card PNGs using Pillow
+2. Generates title card PNG (red background) and outro card PNG (dark background) using Pillow
 3. For each section: creates an ImageClip (infographic) with AudioFileClip (dialogue)
 4. Concatenates all clips with 0.5s crossfade transitions
-5. Exports as MP4 (H.264 + AAC, 1920×1080, 24fps)
+5. Layers background music (if bgm.mp3 exists) with volume envelope
+6. Exports as MP4 (H.264 + AAC, 1920×1080, 24fps)
 
 **Video structure:**
 ```
 [Title Card 3s] → [Section 1] → [Section 2] → ... → [Section 6] → [Outro Card 3s]
          ↕ 0.5s crossfade between each clip ↕
+     🎵 full vol        🎵 15% vol (under dialogue)       🎵 full → fade out
 ```
 
 **Export settings:**
@@ -242,7 +260,7 @@ python3 ${SKILL_DIR}/scripts/assemble_video.py {output}/video-config.json {outpu
 | Video bitrate | 5000k |
 | Audio bitrate | 192k |
 
-### Step 8: Verify Output
+### Step 9: Verify Output
 
 1. Confirm file exists and size is reasonable (30-100 MB typical)
 2. Check metadata:
@@ -257,10 +275,10 @@ python3 ${SKILL_DIR}/scripts/assemble_video.py {output}/video-config.json {outpu
 ## Title & Outro Cards
 
 **Title card** (3s):
-- Dark background (#12121C)
+- Adobe-red background (#EB1000 / RGB 235,16,0) — visible as Slack/Teams thumbnail
 - Line 1: Meeting title (72pt bold white)
-- Line 2: "Meeting Recap" (44pt light gray)
-- Line 3: Date (36pt gray)
+- Line 2: Subtitle (44pt light pink)
+- Line 3: Date (36pt light pink)
 - 0.5s fade in/out
 
 **Outro card** (3s):
@@ -274,11 +292,12 @@ Cards are generated as PNGs via Pillow (no ImageMagick dependency).
 ## Error Handling
 
 - Missing API key → error with setup instructions
-- TTS failure → error with specific turn info for debugging
+- Text-to-Dialogue API failure → error with section name for debugging
 - ffmpeg not found → install instructions
 - moviepy import failure → install instructions
+- Missing bgm.mp3 → skipped (music is optional), prints info message
 
 ## References
 
 - `references/section-planning.md` — How to split content into sections
-- `references/dialogue-format.md` — Dialogue writing guidelines and examples
+- `references/dialogue-format.md` — Dialogue writing guidelines, bridging, voice config, API details

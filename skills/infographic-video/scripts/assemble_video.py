@@ -30,6 +30,7 @@ from PIL import Image, ImageDraw, ImageFont
 from moviepy import (
     ImageClip,
     AudioFileClip,
+    CompositeAudioClip,
     concatenate_videoclips,
     vfx,
 )
@@ -70,12 +71,13 @@ def _draw_centered_text(draw, text, y, font, fill, width):
     draw.text((x, y), text, font=font, fill=fill)
 
 
-def make_card_image(lines, output_path):
-    """Generate a dark card with centered text lines.
+def make_card_image(lines, output_path, bg_color=(18, 18, 28)):
+    """Generate a card with centered text lines.
 
     lines: list of (text, font_size, color, is_bold) tuples
+    bg_color: RGB tuple for background (default dark)
     """
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=(18, 18, 28))
+    img = Image.new("RGB", (WIDTH, HEIGHT), color=bg_color)
     draw = ImageDraw.Draw(img)
 
     fonts = []
@@ -100,16 +102,21 @@ def make_card_image(lines, output_path):
 
 
 def generate_title_card(config, output_dir):
-    """Create title card PNG from config."""
+    """Create title card PNG from config.
+
+    Uses Adobe-red background (#EB1000) so the first frame / Slack thumbnail
+    is visually distinct instead of appearing black.
+    """
     path = output_dir / "_title_card.png"
     title = config["title"]
     make_card_image(
         [
             (title["line1"], 72, (255, 255, 255), True),
-            (title.get("line2", "Meeting Recap"), 44, (180, 180, 200), False),
-            (title.get("line3", ""), 36, (140, 140, 160), False),
+            (title.get("line2", "Meeting Recap"), 44, (255, 230, 230), False),
+            (title.get("line3", ""), 36, (255, 200, 200), False),
         ],
         path,
+        bg_color=(235, 16, 0),
     )
     return path
 
@@ -166,6 +173,47 @@ def make_section_clip(infographic_path, audio_path):
     return clip
 
 
+def load_background_music(audio_dir, duration, title_dur=3.0, outro_dur=3.0):
+    """Load and prepare background music with volume envelope.
+
+    Volume envelope:
+    - Title card: full volume
+    - Sections: 15% volume (subtle bed under dialogue)
+    - Outro card: full volume, then fade out over last 1.5s
+
+    If audio_dir/bgm.mp3 doesn't exist, returns None (music is optional).
+    """
+    bgm_path = Path(audio_dir) / "bgm.mp3"
+    if not bgm_path.exists():
+        print("  No bgm.mp3 found — skipping background music")
+        return None
+
+    from moviepy import concatenate_audioclips
+    from moviepy.audio.fx import MultiplyVolume, AudioFadeOut
+
+    music = AudioFileClip(str(bgm_path))
+
+    # Loop if shorter than video
+    if music.duration < duration:
+        loops = int(duration / music.duration) + 1
+        music = concatenate_audioclips([music] * loops)
+    music = music.subclipped(0, duration)
+
+    # Split into three zones with different volume levels
+    section_start = title_dur
+    outro_start = duration - outro_dur
+
+    title_seg = music.subclipped(0, section_start)
+    body_seg = music.subclipped(section_start, outro_start).with_effects(
+        [MultiplyVolume(0.15)]
+    )
+    outro_seg = music.subclipped(outro_start, duration).with_effects(
+        [AudioFadeOut(1.5)]
+    )
+
+    return concatenate_audioclips([title_seg, body_seg, outro_seg])
+
+
 def main():
     if len(sys.argv) < 5:
         print("Usage: assemble_video.py <video-config.json> <infographic-dir> <audio-dir> <output-dir>")
@@ -180,9 +228,9 @@ def main():
     with open(config_path) as f:
         config = json.load(f)
 
-    # Discover sections from audio files
+    # Discover sections from audio files (exclude internal files and bgm)
     audio_files = sorted(audio_dir.glob("*.mp3"))
-    audio_files = [f for f in audio_files if not f.name.startswith("_")]
+    audio_files = [f for f in audio_files if not f.name.startswith("_") and f.name != "bgm.mp3"]
 
     print("=" * 60)
     print("  Video Assembler — Meeting Recap")
@@ -226,6 +274,16 @@ def main():
     # Concatenate with crossfade transitions
     print(f"\n  Concatenating {len(clips)} clips with {CROSSFADE}s crossfade...")
     final = concatenate_videoclips(clips, padding=-CROSSFADE, method="compose")
+
+    # Layer background music (optional — skipped if bgm.mp3 not found)
+    bgm = load_background_music(audio_dir, final.duration)
+    if bgm is not None:
+        print("  Mixing background music...")
+        original_audio = final.audio
+        if original_audio is not None:
+            final = final.with_audio(CompositeAudioClip([original_audio, bgm]))
+        else:
+            final = final.with_audio(bgm)
 
     # Export
     output_path = output_dir / "meeting-recap-final.mp4"
