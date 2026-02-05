@@ -20,6 +20,18 @@ Analyzes source material — PPTX files, images, URLs, or verbal descriptions �
 
 ---
 
+## Pre-Flight Gate
+
+Before investing time in style generation, answer these 3 questions. If any answer is "no", stop and tell the user why.
+
+1. **Is this a visual style, not a rendering medium?** Mediums (chalkboard, claymation, craft-handmade) describe *how* something is rendered but lack a distinctive visual vocabulary — they produce generic images "rendered as chalk." A style has specific colors, motifs, compositional rules, and recognizable visual DNA.
+
+2. **Can this style produce recognizably different images across 3+ layout types?** Test mentally: would a bento-grid, a linear-progression, and a tree-branching layout each look distinct and good in this style? Styles that only work for one layout type (e.g., subway-map) are too narrow for the library.
+
+3. **Does this overlap with an existing library style?** If yes, proceed only if you can write at least 5 specific Anti-Patterns differentiating the new style from the existing one. If you can't articulate the difference, the style is redundant.
+
+---
+
 ## Step 1: Analyze the Source Material
 
 Adapt your analysis approach to the source type:
@@ -43,7 +55,14 @@ Read the image files directly (Claude is multimodal). Identify:
 - Background treatments
 - Illustration style (flat, 3D, hand-drawn, photographic, etc.)
 
-**IMPORTANT — Save reference images for generation**: When the user provides images as style references, save 2-4 of the strongest/most representative ones alongside the style definition. These will be passed as `--ref` images during infographic generation, which dramatically improves artistic quality. Reference images give the generation model a concrete visual target that text descriptions alone cannot achieve. Store them in a `references/` subdirectory next to the style file.
+**Reference images — use selectively**: When the user provides images as style references, save 2-4 of the strongest/most representative ones in a `references/` subdirectory next to the style file. These can be passed as `--ref` images during generation.
+
+**However, reference images can add noise for illustration styles.** Photos from Unsplash are photographs, not illustrations — they guide palette and motifs but push the generator toward over-decoration and photorealism. Only use reference images when:
+- The user provides actual artwork/illustrations in the target style
+- The style is photographic or realistic in nature
+- The style is from a cultural tradition where specific visual details matter and the text description alone is insufficient
+
+For most illustration styles (comics, graphic design, ink-based, geometric), a well-written style definition with strong Anti-Patterns produces better results than adding photographic references.
 
 ### URLs / websites
 Fetch the page and analyze visual design. Extract same properties as images.
@@ -53,7 +72,11 @@ Work with the user to pin down concrete visual properties. Ask clarifying questi
 
 ---
 
-## Step 2: Understand the Target Format
+## Step 2: Understand the Target Format by Reading Existing Styles
+
+**Before writing anything, read 2-3 existing style files** from `backend/sumi/references/data/styles/` to calibrate on the actual format, tone, and detail level used in practice. Pick styles that are adjacent to the one you're creating — they'll also serve as Anti-Pattern targets in Step 3.
+
+This step is critical. Writing from an abstract template alone produces inconsistent structure, mismatched section formatting, and weaker Anti-Patterns. Reading real files ensures your output matches the established library standard.
 
 Style definitions live at: `backend/sumi/references/data/styles/{style-id}.md`
 
@@ -168,12 +191,15 @@ The difference is stark: theory-oriented descriptions produce sterile, diagramma
 
 ## Anti-Patterns
 
-{Explicit list of what this style must NOT look like. This is critical — it prevents the generation model from falling back to generic defaults.}
+{THE MOST IMPORTANT SECTION. This is what prevents the generation model from producing generic output. Write at least 8 anti-patterns for styles with close siblings in the library, at least 5 for unique styles. Be aggressive, specific, and repetitive.}
 
-- NOT {describe the most likely wrong interpretation}
-- NOT {describe the sterile/corporate version of this style}
-- NOT {describe what a naive prompt would produce}
-- {Include the phrase "This must look like [vivid artistic reference], not [generic fallback]"}
+- **NOT {adjacent-style-id}** — {explain the specific visual difference, e.g., "NOT bauhaus — Bauhaus uses primary colors in geometric grids; this style uses earth tones in organic flowing forms"}
+- **NOT {another-adjacent-style-id}** — {explain difference}
+- **NOT {most likely wrong interpretation}** — {what it looks like when the model gets it wrong}
+- **NOT {sterile/corporate version}** — {describe the generic fallback to avoid}
+- {Quantitative threshold}: "{maximum N shapes per figure}", "{at least N% negative space}", "{no more than N colors per composition}"
+- {Repeat the single most important constraint with emphasis}: "Flat fills only. NO gradients. ZERO shading. Flat. Flat. Flat."
+- {End with a grounding sentence}: "This must look like [specific real-world artifact from a specific year/place], not [generic fallback]"
 
 ## Reference Images
 
@@ -186,13 +212,57 @@ The difference is stark: theory-oriented descriptions produce sterile, diagramma
 {Comma-separated list of ideal use cases — this is used by the recommendation engine to match styles to content}
 ```
 
-### Calibrating detail level
+### Non-negotiable sections
 
-- **Simple styles** (like `bold-graphic`, `corporate-memphis`): Skip Compositional Patterns and Visual Metaphor Mappings. Keep Visual Elements to 6-8 items. These are styles where the visual identity is immediately obvious and the LLM needs less guidance.
-- **Mid-complexity styles** (like `technical-schematic`): Include Variants and detailed Visual Elements. Add Compositional Patterns if the style has specific ways of handling different content types.
-- **Rich/artistic styles** (like `art-nouveau`, `ukiyo-e`, `bauhaus`): Include ALL sections, especially Anti-Patterns and Reference Images. These styles have deep visual vocabularies and are most prone to falling flat without vivid prompt language. For these styles, always include the Anti-Patterns section — it's the difference between getting a sterile diagram vs. expressive art.
+**Every style — regardless of complexity — MUST include:**
+- **Color Palette** with hex codes and Palette Combinations table
+- **Variants** table (at least 3 variants)
+- **Visual Elements** (at least 10 bullets)
+- **Anti-Patterns** (at least 5, ideally 8+)
+- **Best For**
 
-The right level depends on how much ambiguity the LLM would face. A style like "pixel art" is self-explanatory; a style like "ukiyo-e" needs compositional guidance to avoid generic results.
+Never skip Anti-Patterns for "simple" styles. Styles that seem self-explanatory (like "pixel art" or "chalkboard") actually need strong Anti-Patterns most, because the model's default interpretation of these terms is often too generic to produce distinctive infographics.
+
+**Optional sections** (include for rich/artistic styles, skip for straightforward ones):
+- Compositional Patterns table
+- Visual Metaphor Mappings table
+
+### Writing effective Anti-Patterns (most impactful section)
+
+Anti-Patterns have more impact on output quality than any other section. A style with weak Visual Elements but strong Anti-Patterns produces better images than the reverse. Follow these rules:
+
+**1. Name adjacent styles by their library ID:**
+- Good: "**NOT bauhaus** — Bauhaus uses primary colors in strict geometric grids with functional clarity. This style uses earth tones in organic curves."
+- Bad: "NOT geometric" (too vague — half the library is geometric)
+
+**2. Include quantitative thresholds:**
+- "Maximum 6 shapes per figure — if you can count more than 10, it is TOO detailed"
+- "At least 30% of the canvas must be open background color"
+- "No more than 4 colors per composition excluding black and white"
+
+**3. Repeat the #1 constraint with aggressive emphasis:**
+- "Flat fills only. NO gradients. ZERO shading anywhere. Not even subtle gradients. Flat. Flat. Flat."
+- The generation model responds to repetition — saying it once is not enough for the most critical constraint.
+
+**4. Name the most likely failure mode specifically:**
+- "The most common mistake is adding decorative scattered elements to fill empty space. DO NOT fill empty space. The empty space IS the design."
+
+**5. End with a grounding sentence:**
+- "This must look like a 1984 Keith Haring Pop Shop poster, not a generic flat illustration with thick outlines."
+- Anchoring to a specific real-world artifact gives the model a concrete target.
+
+**Example — Charley Harper anti-patterns (strong):**
+```
+- **NOT atomic-age/mid-century generic** — While Harper IS mid-century, his style is specifically
+  about EXTREME geometric reduction of NATURE subjects. Not starbursts, not boomerangs, not Googie.
+- **NOT corporate Memphis** — Memphis uses pastel humanoid figures with noodle arms. Harper uses
+  bold-colored geometric animals. The reduction is toward geometry, not toward soft blobby shapes.
+- **NOT clip art** — Clip art has too many curves and details. Harper animals are geometrically
+  pure — a bird body is a literal triangle, not a rounded cartoon blob.
+- Maximum 8 geometric shapes per animal. If you can count more than 10, reduce further.
+- This must look like a mid-century wildlife serigraph print where a cardinal is literally a red
+  triangle with eyes, not a generic flat illustration of a bird.
+```
 
 ### Writing effective Visual Elements
 
@@ -217,25 +287,28 @@ After writing the file:
 3. **Review section headings** — must use `## Color Palette`, `## Best For` exactly (the loader regex depends on these).
 4. **Read back the file** to verify formatting.
 
-## Step 5: Test with Reference Images
+## Step 5: Test Generation
 
-For rich/artistic styles, always do a test generation using reference images. This catches issues that only surface at generation time.
+Generate a test infographic using the new style definition to catch issues that only surface at generation time.
 
-1. **Select 2-4 reference images** that best represent the style's range (e.g., for Bauhaus: a Kandinsky composition, an architectural poster, a geometric portrait, a mosaic pattern).
-2. **Generate a test infographic** using the new style definition + `--ref` images with simple content.
-3. **Compare** the output against the reference images. Common failure modes:
+1. **Generate a test infographic** using simple content (e.g., "5 steps to make coffee" or "3 types of renewable energy") — something with enough structure to exercise the style across headings, labels, and illustrations.
+2. **If the user provided reference artwork**, include it as `--ref` images. Do NOT use generic stock photos as references — they push illustration styles toward photorealism.
+3. **Diagnose common failure modes:**
    - **Too flat/sterile**: The Visual Elements section uses abstract theory instead of vivid descriptions. Rewrite with concrete, sensory language.
-   - **Too generic**: The Anti-Patterns section is missing or weak. Add explicit "NOT a flat corporate diagram" type instructions.
+   - **Too generic / looks like another style**: The Anti-Patterns section is too weak. Add more entries that name specific adjacent styles and include quantitative thresholds.
    - **Wrong color mood**: The Color Palette describes colors by name only. Add emotional/sensory qualities ("warm cream parchment", "dense velvety black", "luminous colored halos").
    - **Lifeless figures**: People/characters described generically. Add specific construction details ("eyes as concentric colored rings, nose as sharp triangle, hair as sweeping arcs").
-4. **Iterate** — update the style definition based on test results and regenerate until the output matches the artistic intent of the references.
+   - **Over-decorated / too busy**: Too many Visual Elements describing motifs. Reduce to fewer elements and add Anti-Patterns like "NO scattered decorative elements", "NO filling empty space".
+4. **Iterate** — update the style definition based on test results and regenerate until the output is distinctive and recognizable.
 
 ---
 
 ## Existing Styles (for reference and differentiation)
 
-There are currently 20 styles in the system. Make sure the new style is **distinct** from all of these:
+There are currently 42 styles in the library. **Read 2-3 of the most adjacent ones** before writing a new style — they are your primary Anti-Pattern targets.
 
-aged-academia, adobe-slide, art-nouveau, bold-graphic, chalkboard, claymation, corporate-memphis, craft-handmade (default), cyberpunk-neon, ikea-manual, kawaii, knolling, lego-brick, origami, pixel-art, storybook-watercolor, subway-map, technical-schematic, ui-wireframe, ukiyo-e
+aged-academia, airline-travel-poster, art-nouveau, art-nouveau-mucha, atomic-age, axonometric, bauhaus, bold-graphic, charley-harper, constructivism, de-stijl, dia-de-muertos, fantasy-map, futurism, golden-age-comics, googie, ikea-manual, isometric-technical, isotype, jack-kirby, kandinsky, keith-haring, knolling, ligne-claire, matsumoto, memphis, moebius, origami, osamu-tezuka, patent-drawing, pop-art-lichtenstein, renaissance-diagram, richard-scarry, saul-bass, shan-shui, storybook-watercolor, studio-ghibli, sumi-e, superflat, synthwave, tibetan-thangka, ukiyo-e
 
-If the new style overlaps significantly with an existing one, call it out to the user and suggest differentiation strategies.
+If the new style overlaps significantly with an existing one, you must either:
+1. Write at least 5 specific Anti-Patterns differentiating the two, or
+2. Tell the user the style is redundant and suggest the existing alternative.
