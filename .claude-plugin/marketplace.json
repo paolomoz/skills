@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal collection of reusable Claude Code skills, extracted from real project work.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -22,7 +22,65 @@
       "source": "./",
       "skills": [
         "./skills/infographic-video",
-        "./skills/infographics-generate-style"
+        "./skills/infographics-generate-style",
+        "./skills/highlight-reel",
+        "./skills/screenshot-capture"
+      ]
+    },
+    {
+      "name": "patterns",
+      "description": "Cross-cutting infrastructure patterns for AI-powered applications",
+      "source": "./",
+      "skills": [
+        "./skills/sse-streaming",
+        "./skills/multi-model-orchestrator",
+        "./skills/cloudflare-fullstack",
+        "./skills/session-context",
+        "./skills/incremental-processor",
+        "./skills/multi-provider-fallback"
+      ]
+    },
+    {
+      "name": "brand-design",
+      "description": "Brand extraction, design token management, and CSS generation",
+      "source": "./",
+      "skills": [
+        "./skills/brand-extractor",
+        "./skills/brand-css-generator",
+        "./skills/figma-token-sync",
+        "./skills/design-system-extractor"
+      ]
+    },
+    {
+      "name": "page-generation",
+      "description": "AI-powered web page creation, editing, and content pipelines",
+      "source": "./",
+      "skills": [
+        "./skills/generative-page-pipeline",
+        "./skills/conversational-page-builder",
+        "./skills/ai-image-generator",
+        "./skills/da-content-pipeline"
+      ]
+    },
+    {
+      "name": "audit",
+      "description": "Website auditing, performance analysis, and compliance testing",
+      "source": "./",
+      "skills": [
+        "./skills/site-auditor",
+        "./skills/pagespeed-audit",
+        "./skills/accessibility-auditor",
+        "./skills/block-detector"
+      ]
+    },
+    {
+      "name": "data-intelligence",
+      "description": "Data pipelines, content graphs, and report generation",
+      "source": "./",
+      "skills": [
+        "./skills/content-graph",
+        "./skills/data-intelligence-pipeline",
+        "./skills/report-hub-generator"
       ]
     }
   ]

@@ -12,7 +12,7 @@ Transforms a meeting summary (Markdown) into a short (~5 min) video with infogra
 ```
 Meeting Summary (.md)
   → Section Splitting (6 sections)
-  → Infographic Generation (1 per section, any image gen tool)
+  → Infographic Generation (1 per section, Nano Banana Pro)
   → Dialogue Scripts (two-host, casual podcast tone, with bridge lines)
   → Audio Generation (ElevenLabs Text-to-Dialogue API, 2 voices)
   → Video Assembly (moviepy + background music → MP4)
@@ -53,14 +53,14 @@ Meeting Summary (.md)
 | `requests` | ElevenLabs API calls | `pip3 install requests` |
 | `python-dotenv` | Load API keys from `.env` | `pip3 install python-dotenv` |
 | `Pillow` | Title/outro card generation | `pip3 install Pillow` |
-
-Infographic images can be generated with any image generation tool available to the agent.
+| `google-genai` | Gemini 3 Pro Image (Nano Banana Pro) for infographics | `pip3 install google-genai` |
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
 | `ELEVENLABS_API_KEY` | ElevenLabs API key (required for audio) |
+| `GOOGLE_API_KEY` | Google AI API key (required for infographic generation) |
 
 ## Default Voices
 
@@ -105,6 +105,7 @@ Run `scripts/list_voices.py` to discover available ElevenLabs voices.
 2. Verify API keys in `.env`:
    ```bash
    grep ELEVENLABS_API_KEY .env
+   grep GOOGLE_API_KEY .env
    ```
 3. Create output directory structure
 
@@ -135,16 +136,21 @@ Select a layout×style combination for each section's infographic. Vary styles a
 | Metrics / KPIs | `dashboard` | `corporate-memphis` |
 | Future / Technology | `circular-flow` | `cyberpunk-neon` |
 
-All infographics: **16:9 landscape** (1920×1080 or 2K equivalent).
+All infographics: **16:9 landscape** (2K via Nano Banana Pro).
 
 ### Step 4: Generate Infographics
 
-For each section, generate an infographic image:
+For each section, generate an infographic image using the `generate_infographic.py` script (Gemini 3 Pro Image / Nano Banana Pro):
+
+```bash
+python3 ${SKILL_DIR}/scripts/generate_infographic.py "Your detailed prompt here" \
+  --output {output}/infographic/{NN}-{slug}.png \
+  --aspect-ratio 16:9
+```
 
 1. Write a detailed prompt describing the layout, style, and content
-2. Generate the image using whatever image generation tool is available
-3. Save to `{output}/infographic/{NN}-{slug}.png`
-4. Verify output exists and is 16:9 aspect ratio
+2. Run `generate_infographic.py` with the prompt
+3. Verify output exists and is 16:9 aspect ratio
 
 Generate sequentially (one at a time) to ensure quality.
 
