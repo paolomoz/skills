@@ -12,6 +12,7 @@ set -euo pipefail
 #   ./tests/trigger-test.sh --concurrency 3          # Run N tests in parallel
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROMPTS_FILE="$SCRIPT_DIR/trigger-prompts.json"
 PARSER="$SCRIPT_DIR/parse-stream.mjs"
 RESULTS_DIR="$SCRIPT_DIR/results"
@@ -64,7 +65,31 @@ if [[ ! -f "$PROMPTS_FILE" ]]; then
   exit 1
 fi
 
+# cd to project root so claude discovers CLAUDE.md and skills
+cd "$PROJECT_DIR"
+echo "Working directory: $(pwd)"
+
 mkdir -p "$RESULTS_DIR"
+
+# Pre-flight: verify claude can produce output
+echo "Pre-flight check..."
+unset CLAUDECODE 2>/dev/null || true
+PREFLIGHT_ERR=$(mktemp)
+PREFLIGHT=$(claude -p --output-format stream-json --max-turns 1 "Reply with exactly: PREFLIGHT_OK" 2>"$PREFLIGHT_ERR") || true
+if [[ -z "$PREFLIGHT" ]]; then
+  echo "Error: claude -p produced no output." >&2
+  if [[ -s "$PREFLIGHT_ERR" ]]; then
+    echo "  stderr:" >&2
+    cat "$PREFLIGHT_ERR" >&2
+  fi
+  echo "" >&2
+  echo "  Try running manually: claude -p \"hello\"" >&2
+  rm -f "$PREFLIGHT_ERR"
+  exit 1
+fi
+rm -f "$PREFLIGHT_ERR"
+echo "Pre-flight OK ($(echo "$PREFLIGHT" | wc -l | tr -d ' ') lines of stream-json)"
+echo ""
 
 # --- Build test case list ---
 # Each line: skill_name<TAB>prompt<TAB>signals_csv<TAB>expected
@@ -143,21 +168,32 @@ run_single_test() {
     parser_args+=(--signals "$signals")
   fi
 
-  # Unset CLAUDECODE to allow nested invocation, run claude
-  local stream_output
+  # Run claude from the project directory (skills are discovered via CLAUDE.md)
+  local stream_output stderr_file
+  stderr_file=$(mktemp)
   stream_output=$(
     unset CLAUDECODE
+    cd "$PROJECT_DIR"
     claude -p \
       --output-format stream-json \
       --max-turns 1 \
-      "$prompt" 2>/dev/null
+      "$prompt" 2>"$stderr_file"
   ) || true
 
+  if $VERBOSE || [[ -z "$stream_output" ]]; then
+    if [[ -s "$stderr_file" ]]; then
+      echo "  stderr: $(head -3 "$stderr_file")"
+    fi
+    if [[ -z "$stream_output" ]]; then
+      echo "  WARNING: claude produced no output"
+    fi
+  fi
   if $VERBOSE; then
-    echo "  --- raw output ---"
+    echo "  --- raw output (first 20 lines) ---"
     echo "$stream_output" | head -20
     echo "  --- end ---"
   fi
+  rm -f "$stderr_file"
 
   # Parse the stream
   local result

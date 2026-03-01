@@ -1,6 +1,7 @@
 {
   "skills": {
     "sse-streaming": {
+      "description": "Implement Server-Sent Events streaming from Cloudflare Workers with reconnection and state persistence",
       "prompts": [
         "Set up SSE streaming in my Cloudflare Worker",
         "I need real-time server push events to the browser",
@@ -9,6 +10,7 @@
       "signals": ["EventSource", "ReadableStream", "text/event-stream", "TransformStream", "SSE", "server-sent"]
     },
     "multi-model-orchestrator": {
+      "description": "Orchestrate multi-stage AI pipelines routing tasks to optimal models by role",
       "prompts": [
         "Build a multi-stage AI pipeline that classifies then generates",
         "I need to route prompts to different LLM models based on complexity",
@@ -17,6 +19,7 @@
       "signals": ["ModelFactory", "pipeline", "orchestrat", "multi-model", "fallback chain", "stage"]
     },
     "cloudflare-fullstack": {
+      "description": "Build full-stack applications on Cloudflare Workers with KV, D1, R2, and Workers AI",
       "prompts": [
         "Build a full-stack app on Cloudflare Workers with D1 database",
         "Create a serverless app with KV storage and R2 on Cloudflare",
@@ -25,6 +28,7 @@
       "signals": ["wrangler", "Workers", "D1", "KV", "R2", "Vectorize", "Cloudflare"]
     },
     "session-context": {
+      "description": "Track user session context across multi-turn interactions using sessionStorage and KV",
       "prompts": [
         "Add multi-turn session tracking with KV storage",
         "Implement conversation context that persists across page loads",
@@ -33,6 +37,7 @@
       "signals": ["SessionContextManager", "sessionStorage", "journey", "multi-turn", "TTL", "session"]
     },
     "incremental-processor": {
+      "description": "Process large datasets incrementally with hash-based change detection and state persistence",
       "prompts": [
         "Build a hash-based change detection system for batch processing",
         "I need resumable batch processing that skips unchanged items",
@@ -41,6 +46,7 @@
       "signals": ["StateManager", "AnalysisIndex", "hash", "incremental", "resumable", "pacing"]
     },
     "multi-provider-fallback": {
+      "description": "Abstract AI model providers behind unified interface with automatic fallback and synthesis",
       "prompts": [
         "Create an AI client that falls back between providers automatically",
         "Build a multi-provider abstraction for Claude, GPT, and Gemini",
@@ -49,6 +55,7 @@
       "signals": ["provider", "fallback", "multi-provider", "model preset", "abstraction"]
     },
     "railway-deploy": {
+      "description": "Deploy monorepos to Railway with multiple services using Dockerfiles and config-as-code",
       "prompts": [
         "Deploy my monorepo to Railway with Dockerfiles",
         "Set up Railway deployment with config-as-code for my services",
@@ -57,6 +64,7 @@
       "signals": ["Railway", "Dockerfile", "deploy", "railway.json", "monorepo"]
     },
     "infographic-video": {
+      "description": "Create meeting recap videos. Splits meeting summaries into sections, generates infographics, produces two-host dialogue audio via ElevenLabs, and assembles into MP4 with background music. Use when user asks to create a meeting video, video recap, video summary, or turn meeting notes into a video.",
       "prompts": [
         "Create a video recap from this meeting summary",
         "Generate a meeting recap video with two-host dialogue",
@@ -65,6 +73,7 @@
       "signals": ["ElevenLabs", "dialogue", "infographic", "video", "meeting", "recap", "MP4"]
     },
     "infographics-generate-style": {
+      "description": "Create infographic style definitions. Analyzes reference images, PPTX files, URLs, or verbal descriptions to generate reusable infographic styles with visual elements and anti-patterns. Use when user asks to create an infographic style, generate style from reference images, or extract a visual style for infographics.",
       "prompts": [
         "Create a new infographic style from this reference image",
         "Generate a style definition for my infographics based on our brand",
@@ -73,6 +82,7 @@
       "signals": ["style", "infographic", "Anti-Pattern", "visual element", "pre-flight", "reference"]
     },
     "highlight-reel": {
+      "description": "Create polished highlight reel videos from screen recordings with captions, transitions, and music",
       "prompts": [
         "Create a highlight reel from these screen recordings",
         "Make a 60-second sizzle reel from my demo videos",
@@ -81,6 +91,7 @@
       "signals": ["Remotion", "highlight reel", "sizzle", "typewriter", "caption", "clip", "poster frame"]
     },
     "screenshot-capture": {
+      "description": "Take screenshots of web pages. Captures full-page and viewport screenshots with Puppeteer, removes overlays and cookie consent banners, supports before/after visual comparison. Use when user asks to screenshot, capture, or take visual snapshots of URLs.",
       "prompts": [
         "Capture full-page screenshots of these URLs with overlay removal",
         "Take viewport screenshots of my website for visual comparison",
@@ -89,6 +100,7 @@
       "signals": ["screenshot", "Puppeteer", "viewport", "overlay", "cookie consent", "lazy-load", "capture"]
     },
     "brand-extractor": {
+      "description": "Extract brand identity and profiles from websites. Analyzes URLs, descriptions, or assets to produce a BrandProfile with tone attributes, positioning, color palette, and typography using multi-tier AI fallback. Use when user asks to extract brand identity, analyze brand profile, or build a brand profile from a URL.",
       "prompts": [
         "Extract the brand identity from https://example.com",
         "Analyze the brand profile including tone and positioning for this company",
@@ -97,6 +109,7 @@
       "signals": ["BrandProfile", "brand", "tone", "positioning", "identity", "extraction"]
     },
     "brand-css-generator": {
+      "description": "Generate brand CSS and design tokens. Creates CSS custom properties, theme variables, and design branches from brand profiles with WCAG AA contrast enforcement. Use when user asks to generate CSS from a brand profile, create brand design tokens, or build a CSS theme from brand identity.",
       "prompts": [
         "Generate CSS custom properties from this brand profile",
         "Create design tokens and a CSS theme from our brand colors",
@@ -105,6 +118,7 @@
       "signals": ["CSS custom propert", "design token", "WCAG", "brand", "Mode A", "Mode B", "contrast"]
     },
     "figma-token-sync": {
+      "description": "Bidirectionally sync CSS custom properties with Figma variables with CI drift detection",
       "prompts": [
         "Sync our CSS custom properties to Figma variables",
         "Pull design tokens from Figma and generate CSS",
@@ -113,6 +127,7 @@
       "signals": ["Figma", "PUSH", "PULL", "DIFF", "variable", "token sync", "alias"]
     },
     "design-system-extractor": {
+      "description": "Extract design systems from live websites. Uses Puppeteer to capture computed styles, colors, typography, spacing, button variants, and layout tokens from any URL. Use when user asks to extract a design system, reverse-engineer CSS, or capture design tokens from a website.",
       "prompts": [
         "Extract the design system from this live website using Puppeteer",
         "Reverse-engineer the CSS tokens from https://example.com",
@@ -121,6 +136,7 @@
       "signals": ["design system", "computed style", "heading hierarchy", "button variant", "layout token", "color palette"]
     },
     "generative-page-pipeline": {
+      "description": "Generate web pages from queries. Transforms user queries into complete HTML web pages through a 5-stage pipeline: intent classification, block planning, parallel content generation, and DA persistence. Use when user asks to generate web pages, build an AI page generator, or create a content-to-page pipeline. NOT for generic AI model orchestration — use multi-model-orchestrator for that.",
       "prompts": [
         "Build a multi-stage AI pipeline that generates web pages from queries",
         "Create a page generation system with intent classification and content blocks",
@@ -129,6 +145,7 @@
       "signals": ["intent classif", "block planning", "page generat", "5-stage", "pipeline", "content generat"]
     },
     "conversational-page-builder": {
+      "description": "Build interactive AI agents that create and refine web pages through multi-turn conversations",
       "prompts": [
         "Build a chat-based website builder with multi-turn conversations",
         "Create an interactive AI agent that builds pages through conversation",
@@ -137,6 +154,7 @@
       "signals": ["conversational", "agent", "multi-turn", "brand brief", "iterative", "phase"]
     },
     "ai-image-generator": {
+      "description": "Generate AI images. Uses fal.ai FLUX, Vertex AI Imagen, and Gemini with provider fallbacks, embedding-based caching, and R2 storage. Supports batch generation, prompt enhancement, and LoRA. Use when user asks to generate AI images, create hero images, or set up AI-powered image generation. NOT for building generic Cloudflare apps — use cloudflare-fullstack for that.",
       "prompts": [
         "Set up multi-provider AI image generation with fal.ai and Vertex",
         "Build an image generation service with caching and R2 storage",
@@ -145,6 +163,7 @@
       "signals": ["fal.ai", "FLUX", "Imagen", "Gemini", "image generat", "R2", "LoRA", "provider"]
     },
     "da-content-pipeline": {
+      "description": "Convert HTML to Document Authoring format and upload to AEM Edge Delivery Services",
       "prompts": [
         "Convert this HTML page to DA format and upload to AEM Edge Delivery",
         "Build a pipeline to convert plain HTML to Document Authoring format",
@@ -153,6 +172,7 @@
       "signals": ["DA", "Document Authoring", "plain.html", "IMS", "preview", "publish", "AEM"]
     },
     "site-auditor": {
+      "description": "Audit website content quality. Cross-references query indexes, sitemaps, and navigation to find content gaps, orphan pages, and metadata issues across 11 gap categories. Use when user asks to audit a website for content gaps, check sitemap coverage, or find orphan pages.",
       "prompts": [
         "Audit this website for content gaps by cross-referencing sitemap and nav",
         "Run a site quality audit comparing query index, sitemap, and navigation",
@@ -161,6 +181,7 @@
       "signals": ["content gap", "sitemap", "navigation", "query index", "orphan", "audit", "metadata"]
     },
     "pagespeed-audit": {
+      "description": "Run PageSpeed and Core Web Vitals audits. Collects CWV metrics (LCP, CLS, INP), RUM bundle data, and PSI API scores across multiple URLs with device segmentation. Use when user asks to test PageSpeed, audit Core Web Vitals, benchmark CWV, or analyze web performance metrics.",
       "prompts": [
         "Run a Core Web Vitals audit across these URLs",
         "Collect PageSpeed scores and CWV data for my site",
@@ -169,6 +190,7 @@
       "signals": ["Core Web Vitals", "CWV", "PageSpeed", "PSI", "RUM", "LCP", "CLS", "INP"]
     },
     "accessibility-auditor": {
+      "description": "Run WCAG 2.1 AA accessibility audits and content safety checks. Generates test case matrices (standard, adversarial, brand-voice, content-safety), detects banned words, validates a11y compliance. Use when user asks for accessibility testing, WCAG audit, a11y validation, or content safety checks.",
       "prompts": [
         "Run a WCAG 2.1 AA compliance audit on these pages",
         "Test accessibility with standard, adversarial, and content safety test cases",
@@ -177,6 +199,7 @@
       "signals": ["WCAG", "accessibility", "a11y", "test case matri", "banned word", "content safety", "adversarial"]
     },
     "block-detector": {
+      "description": "Detect content blocks on web pages. Identifies and catalogs blocks using semantic analysis, class patterns, and data attributes, capturing bounding boxes and CSS selectors for each. Use when user asks to detect blocks, catalog page blocks, or extract content block structure from a URL.",
       "prompts": [
         "Detect and catalog all content blocks on this webpage",
         "Extract page blocks with bounding boxes and CSS selectors",
@@ -185,6 +208,7 @@
       "signals": ["block detect", "bounding box", "CSS selector", "semantic", "data attribute", "class pattern"]
     },
     "content-graph": {
+      "description": "Build content relationship graphs. Maps semantic connections between pages, identifies orphan pages and hub nodes, performs topic clustering for navigation and recommendations. Use when user asks to build a content graph, map content relationships, find orphan pages, or create a topic network.",
       "prompts": [
         "Build a semantic content graph from my site's pages",
         "Map content relationships and find orphan pages in my navigation",
@@ -193,6 +217,7 @@
       "signals": ["content graph", "semantic", "node", "edge", "orphan", "hub", "topic cluster"]
     },
     "data-intelligence-pipeline": {
+      "description": "Build Slack and document intelligence pipelines. End-to-end 5-stage pipeline: fetch from Slack channels or documents, analyze with extraction prompts, synthesize KPIs, and render dashboards. Use when user asks to build a Slack data pipeline, extract intelligence from documents, or create KPI synthesis dashboards. NOT for generic file-level change detection — use incremental-processor for that.",
       "prompts": [
         "Build an end-to-end data pipeline from Slack channels to a dashboard",
         "Create an intelligence gathering pipeline that fetches, analyzes, and synthesizes data",
@@ -201,6 +226,7 @@
       "signals": ["data pipeline", "intelligence", "Slack", "synthesis", "KPI", "extraction", "dashboard"]
     },
     "report-hub-generator": {
+      "description": "Generate single-page HTML report hubs with interactive navigation, view toggles, and theming",
       "prompts": [
         "Generate a single-page HTML report hub with interactive navigation",
         "Create an analysis dashboard with grid/list/detail view toggles",

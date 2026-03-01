@@ -1,0 +1,740 @@
+[
+  {
+    "skill": "sse-streaming",
+    "prompt": "Set up SSE streaming in my Cloudflare Worker",
+    "expected": "sse-streaming",
+    "detected": "sse-streaming",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up Server-Sent Events (SSE) streaming in your Cloudflare Worker. Let me invoke the SSE streaming ski"
+  },
+  {
+    "skill": "sse-streaming",
+    "prompt": "I need real-time server push events to the browser",
+    "expected": "sse-streaming",
+    "detected": "sse-streaming",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you implement Server-Sent Events (SSE) streaming. This skill sets up SSE streaming from Cloudflare Workers w"
+  },
+  {
+    "skill": "sse-streaming",
+    "prompt": "Add event streaming with reconnection to my API",
+    "expected": "sse-streaming",
+    "detected": "sse-streaming",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you implement Server-Sent Events (SSE) streaming with reconnection support. Let me invoke the appropriate sk"
+  },
+  {
+    "skill": "multi-model-orchestrator",
+    "prompt": "Build a multi-stage AI pipeline that classifies then generates",
+    "expected": "multi-model-orchestrator",
+    "detected": "multi-model-orchestrator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the multi-model-orchestrator skill to build a multi-stage AI pipeline with classification and generation s"
+  },
+  {
+    "skill": "multi-model-orchestrator",
+    "prompt": "I need to route prompts to different LLM models based on complexity",
+    "expected": "multi-model-orchestrator",
+    "detected": "multi-model-orchestrator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up a multi-model orchestrator that routes prompts to optimal models based on complexity and task typ"
+  },
+  {
+    "skill": "multi-model-orchestrator",
+    "prompt": "Create an orchestrator that chains Claude and GPT for different stages",
+    "expected": "multi-model-orchestrator",
+    "detected": "multi-model-orchestrator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the multi-model-orchestrator skill to build a multi-stage AI pipeline that routes tasks to Claude and GPT"
+  },
+  {
+    "skill": "cloudflare-fullstack",
+    "prompt": "Build a full-stack app on Cloudflare Workers with D1 database",
+    "expected": "cloudflare-fullstack",
+    "detected": "cloudflare-fullstack",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you build a full-stack application on Cloudflare Workers with D1 database. Let me invoke the Cloudflare full"
+  },
+  {
+    "skill": "cloudflare-fullstack",
+    "prompt": "Create a serverless app with KV storage and R2 on Cloudflare",
+    "expected": "cloudflare-fullstack",
+    "detected": "cloudflare-fullstack",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you build a full-stack serverless application on Cloudflare Workers with KV and R2 storage. Let me invoke th"
+  },
+  {
+    "skill": "cloudflare-fullstack",
+    "prompt": "Set up a Cloudflare Workers project with wrangler and D1 migrations",
+    "expected": "cloudflare-fullstack",
+    "detected": "cloudflare-fullstack",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up a Cloudflare Workers project with Wrangler and D1 migrations. Let me invoke the appropriate skill"
+  },
+  {
+    "skill": "session-context",
+    "prompt": "Add multi-turn session tracking with KV storage",
+    "expected": "session-context",
+    "detected": "session-context",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the session-context skill to implement multi-turn session tracking with KV storage for you."
+  },
+  {
+    "skill": "session-context",
+    "prompt": "Implement conversation context that persists across page loads",
+    "expected": "session-context",
+    "detected": "session-context",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the session-context skill to implement conversation context that persists across page loads using sessionS"
+  },
+  {
+    "skill": "session-context",
+    "prompt": "Track user journey stages with sessionStorage and KV caching",
+    "expected": "session-context",
+    "detected": "session-context",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the session-context skill to help you implement user journey stage tracking with sessionStorage and KV cac"
+  },
+  {
+    "skill": "incremental-processor",
+    "prompt": "Build a hash-based change detection system for batch processing",
+    "expected": "incremental-processor",
+    "detected": "incremental-processor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the incremental-processor skill to build a hash-based change detection system for batch processing with st"
+  },
+  {
+    "skill": "incremental-processor",
+    "prompt": "I need resumable batch processing that skips unchanged items",
+    "expected": "incremental-processor",
+    "detected": "incremental-processor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the incremental processor skill to set up resumable batch processing with hash-based change detection and"
+  },
+  {
+    "skill": "incremental-processor",
+    "prompt": "Create an incremental pipeline that detects file changes via hashing",
+    "expected": "incremental-processor",
+    "detected": "incremental-processor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the incremental-processor skill to build an incremental pipeline with hash-based change detection and stat"
+  },
+  {
+    "skill": "multi-provider-fallback",
+    "prompt": "Create an AI client that falls back between providers automatically",
+    "expected": "multi-provider-fallback",
+    "detected": "multi-provider-fallback",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the multi-provider-fallback skill to build an AI client with automatic provider fallback and synthesis cap"
+  },
+  {
+    "skill": "multi-provider-fallback",
+    "prompt": "Build a multi-provider abstraction for Claude, GPT, and Gemini",
+    "expected": "multi-provider-fallback",
+    "detected": "multi-provider-fallback",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the multi-provider-fallback skill to build a unified abstraction layer across Claude, GPT, and Gemini with"
+  },
+  {
+    "skill": "multi-provider-fallback",
+    "prompt": "I need automatic provider switching when one AI API fails",
+    "expected": "multi-provider-fallback",
+    "detected": "multi-provider-fallback",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up a multi-provider AI fallback system with automatic switching when one provider fails. Let me invo"
+  },
+  {
+    "skill": "railway-deploy",
+    "prompt": "Deploy my monorepo to Railway with Dockerfiles",
+    "expected": "railway-deploy",
+    "detected": "railway-deploy",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you deploy your monorepo to Railway with Dockerfiles. Let me invoke the Railway deployment skill to get this"
+  },
+  {
+    "skill": "railway-deploy",
+    "prompt": "Set up Railway deployment with config-as-code for my services",
+    "expected": "railway-deploy",
+    "detected": "railway-deploy",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up Railway deployment with config-as-code for your services. Let me invoke the Railway deployment sk"
+  },
+  {
+    "skill": "railway-deploy",
+    "prompt": "I need to deploy multiple services to Railway from a monorepo",
+    "expected": "railway-deploy",
+    "detected": "railway-deploy",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the Railway deployment skill to help you set up your monorepo for deployment on Railway with multiple serv"
+  },
+  {
+    "skill": "infographic-video",
+    "prompt": "Create a video recap from this meeting summary",
+    "expected": "infographic-video",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you create a video recap from your meeting summary! However, I need the actual meeting summary co"
+  },
+  {
+    "skill": "infographic-video",
+    "prompt": "Generate a meeting recap video with two-host dialogue",
+    "expected": "infographic-video",
+    "detected": "infographic-video",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the infographic-video skill to help you create a meeting recap video with two-host dialogue. Let me get th"
+  },
+  {
+    "skill": "infographic-video",
+    "prompt": "Turn these meeting notes into a 5-minute video with infographics",
+    "expected": "infographic-video",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help turn your meeting notes into a video with infographics! However, I notice you mentioned \"these me"
+  },
+  {
+    "skill": "infographics-generate-style",
+    "prompt": "Create a new infographic style from this reference image",
+    "expected": "infographics-generate-style",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you create a new infographic style from a reference image! However, I don't see any image attached"
+  },
+  {
+    "skill": "infographics-generate-style",
+    "prompt": "Generate a style definition for my infographics based on our brand",
+    "expected": "infographics-generate-style",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you generate an infographic style definition based on your brand! To get started, I need a bit mo"
+  },
+  {
+    "skill": "infographics-generate-style",
+    "prompt": "Extract an infographic style from this PowerPoint presentation",
+    "expected": "infographics-generate-style",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you extract an infographic style from your PowerPoint presentation! However, I don't see a file a"
+  },
+  {
+    "skill": "highlight-reel",
+    "prompt": "Create a highlight reel from these screen recordings",
+    "expected": "highlight-reel",
+    "detected": "highlight-reel",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'd be happy to help you create a highlight reel from your screen recordings! Let me invoke the highlight reel skill t"
+  },
+  {
+    "skill": "highlight-reel",
+    "prompt": "Make a 60-second sizzle reel from my demo videos",
+    "expected": "highlight-reel",
+    "detected": "highlight-reel",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'd be happy to help you create a 60-second highlight reel from your demo videos! Let me invoke the highlight-reel ski"
+  },
+  {
+    "skill": "highlight-reel",
+    "prompt": "Build a product demo video with title cards and transitions from these clips",
+    "expected": "highlight-reel",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you create a product demo video with title cards and transitions! This matches the **highlight-reel"
+  },
+  {
+    "skill": "screenshot-capture",
+    "prompt": "Capture full-page screenshots of these URLs with overlay removal",
+    "expected": "screenshot-capture",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help capture full-page screenshots with overlay removal! However, I need the URLs you'd like to screen"
+  },
+  {
+    "skill": "screenshot-capture",
+    "prompt": "Take viewport screenshots of my website for visual comparison",
+    "expected": "screenshot-capture",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you take viewport screenshots of your website! However, I need a bit more information:  1. **What i"
+  },
+  {
+    "skill": "screenshot-capture",
+    "prompt": "Screenshot these pages and handle cookie consent banners automatically",
+    "expected": "screenshot-capture",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you take screenshots of web pages with automatic cookie consent banner handling! However, I need"
+  },
+  {
+    "skill": "brand-extractor",
+    "prompt": "Extract the brand identity from https://example.com",
+    "expected": "brand-extractor",
+    "detected": "brand-extractor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll extract the brand identity from that URL for you."
+  },
+  {
+    "skill": "brand-extractor",
+    "prompt": "Analyze the brand profile including tone and positioning for this company",
+    "expected": "brand-extractor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help analyze a brand profile! However, I need a URL or website address to analyze. Could you please prov"
+  },
+  {
+    "skill": "brand-extractor",
+    "prompt": "Build a comprehensive brand profile from this website URL",
+    "expected": "brand-extractor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you extract a brand profile from a website! However, I notice you mentioned \"this website URL\" bu"
+  },
+  {
+    "skill": "brand-css-generator",
+    "prompt": "Generate CSS custom properties from this brand profile",
+    "expected": "brand-css-generator",
+    "detected": "brand-css-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the brand CSS generator skill to create CSS custom properties from your brand profile."
+  },
+  {
+    "skill": "brand-css-generator",
+    "prompt": "Create design tokens and a CSS theme from our brand colors",
+    "expected": "brand-css-generator",
+    "detected": "brand-css-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'd be happy to help you generate design tokens and a CSS theme from your brand colors! Let me invoke the brand CSS ge"
+  },
+  {
+    "skill": "brand-css-generator",
+    "prompt": "Build WCAG AA compliant CSS variables from our brand identity",
+    "expected": "brand-css-generator",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'll help you build WCAG AA compliant CSS variables from your brand identity. This involves two steps: first extractin"
+  },
+  {
+    "skill": "figma-token-sync",
+    "prompt": "Sync our CSS custom properties to Figma variables",
+    "expected": "figma-token-sync",
+    "detected": "figma-token-sync",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you set up bidirectional syncing between your CSS custom properties and Figma variables with CI drift detect"
+  },
+  {
+    "skill": "figma-token-sync",
+    "prompt": "Pull design tokens from Figma and generate CSS",
+    "expected": "figma-token-sync",
+    "detected": "brand-css-generator",
+    "method": "tool_use",
+    "status": "FAIL",
+    "snippet": "I'll help you pull design tokens from Figma and generate CSS. Let me invoke both skills in parallel since they handle"
+  },
+  {
+    "skill": "figma-token-sync",
+    "prompt": "Run a diff to detect drift between our CSS tokens and Figma variables",
+    "expected": "figma-token-sync",
+    "detected": "figma-token-sync",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the Figma token sync skill to detect drift between your CSS custom properties and Figma variables."
+  },
+  {
+    "skill": "design-system-extractor",
+    "prompt": "Extract the design system from this live website using Puppeteer",
+    "expected": "design-system-extractor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you extract a design system from a live website! However, I need the URL of the website you'd lik"
+  },
+  {
+    "skill": "design-system-extractor",
+    "prompt": "Reverse-engineer the CSS tokens from https://example.com",
+    "expected": "design-system-extractor",
+    "detected": "design-system-extractor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll extract the design system and CSS tokens from that URL using the design system extractor."
+  },
+  {
+    "skill": "design-system-extractor",
+    "prompt": "Capture all design tokens (colors, typography, spacing) from this site",
+    "expected": "design-system-extractor",
+    "detected": "none",
+    "method": "none",
+    "status": "FAIL",
+    "snippet": "I'd be happy to help extract design tokens from a website! However, I need the URL of the site you'd like me to analyze."
+  },
+  {
+    "skill": "generative-page-pipeline",
+    "prompt": "Build a multi-stage AI pipeline that generates web pages from queries",
+    "expected": "generative-page-pipeline",
+    "detected": "multi-model-orchestrator",
+    "method": "tool_use",
+    "status": "FAIL",
+    "snippet": "I'll help you build a multi-stage AI pipeline for generating web pages from queries. This involves two complementary s"
+  },
+  {
+    "skill": "generative-page-pipeline",
+    "prompt": "Create a page generation system with intent classification and content blocks",
+    "expected": "generative-page-pipeline",
+    "detected": "generative-page-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the generative page pipeline skill to build a complete page generation system with intent classification,"
+  },
+  {
+    "skill": "generative-page-pipeline",
+    "prompt": "Implement a generative page pipeline with RAG integration",
+    "expected": "generative-page-pipeline",
+    "detected": "generative-page-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the generative page pipeline skill to build a complete implementation with RAG (Retrieval-Augmented Genera"
+  },
+  {
+    "skill": "conversational-page-builder",
+    "prompt": "Build a chat-based website builder with multi-turn conversations",
+    "expected": "conversational-page-builder",
+    "detected": "conversational-page-builder",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the conversational-page-builder skill to build an interactive AI agent that creates and refines web pages"
+  },
+  {
+    "skill": "conversational-page-builder",
+    "prompt": "Create an interactive AI agent that builds pages through conversation",
+    "expected": "conversational-page-builder",
+    "detected": "conversational-page-builder",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the conversational-page-builder skill to create an interactive AI agent that builds and refines web pages"
+  },
+  {
+    "skill": "conversational-page-builder",
+    "prompt": "Implement a conversational page editor with real-time preview",
+    "expected": "conversational-page-builder",
+    "detected": "conversational-page-builder",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the conversational page builder skill to implement a full conversational page editor with real-time previe"
+  },
+  {
+    "skill": "ai-image-generator",
+    "prompt": "Set up multi-provider AI image generation with fal.ai and Vertex",
+    "expected": "ai-image-generator",
+    "detected": "ai-image-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll set up a multi-provider AI image generation system with fal.ai FLUX and Vertex AI Imagen, including provider fall"
+  },
+  {
+    "skill": "ai-image-generator",
+    "prompt": "Build an image generation service with caching and R2 storage",
+    "expected": "ai-image-generator",
+    "detected": "ai-image-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the AI image generation skill to build this service for you. This will set up a complete image generation"
+  },
+  {
+    "skill": "ai-image-generator",
+    "prompt": "Create a hero image generator with FLUX and Imagen fallbacks",
+    "expected": "ai-image-generator",
+    "detected": "ai-image-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the AI image generator skill to build a hero image generator with FLUX and Imagen fallbacks, including pro"
+  },
+  {
+    "skill": "da-content-pipeline",
+    "prompt": "Convert this HTML page to DA format and upload to AEM Edge Delivery",
+    "expected": "da-content-pipeline",
+    "detected": "da-content-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'd be happy to help you convert HTML to Document Authoring (DA) format and upload it to AEM Edge Delivery Services. L"
+  },
+  {
+    "skill": "da-content-pipeline",
+    "prompt": "Build a pipeline to convert plain HTML to Document Authoring format",
+    "expected": "da-content-pipeline",
+    "detected": "da-content-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the DA content pipeline skill to help you build a pipeline for converting plain HTML to Document Authoring"
+  },
+  {
+    "skill": "da-content-pipeline",
+    "prompt": "Upload content to DA with IMS authentication and trigger preview",
+    "expected": "da-content-pipeline",
+    "detected": "da-content-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the DA content pipeline skill to help you upload content to Document Authoring (AEM Edge Delivery Services"
+  },
+  {
+    "skill": "site-auditor",
+    "prompt": "Audit this website for content gaps by cross-referencing sitemap and nav",
+    "expected": "site-auditor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you audit a website for content gaps! However, I need the URL of the website you'd like to audit."
+  },
+  {
+    "skill": "site-auditor",
+    "prompt": "Run a site quality audit comparing query index, sitemap, and navigation",
+    "expected": "site-auditor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to run a site quality audit for you! To get started, I need a bit more information:  1. **Website URL** —"
+  },
+  {
+    "skill": "site-auditor",
+    "prompt": "Find orphan pages and content gaps across my website",
+    "expected": "site-auditor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you audit your website for orphan pages and content gaps! To get started, I need a couple of deta"
+  },
+  {
+    "skill": "pagespeed-audit",
+    "prompt": "Run a Core Web Vitals audit across these URLs",
+    "expected": "pagespeed-audit",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you run a Core Web Vitals audit! However, I notice you mentioned \"these URLs\" but didn't actually i"
+  },
+  {
+    "skill": "pagespeed-audit",
+    "prompt": "Collect PageSpeed scores and CWV data for my site",
+    "expected": "pagespeed-audit",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you run a PageSpeed and Core Web Vitals audit! To get started, I need a bit more information:  1. *"
+  },
+  {
+    "skill": "pagespeed-audit",
+    "prompt": "Benchmark performance with RUM data and PSI API for these pages",
+    "expected": "pagespeed-audit",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you run a PageSpeed and Core Web Vitals audit! However, I need the URLs of the pages you'd like to"
+  },
+  {
+    "skill": "accessibility-auditor",
+    "prompt": "Run a WCAG 2.1 AA compliance audit on these pages",
+    "expected": "accessibility-auditor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you run a WCAG 2.1 AA accessibility audit! However, I need a bit more information:  **Which pages w"
+  },
+  {
+    "skill": "accessibility-auditor",
+    "prompt": "Test accessibility with standard, adversarial, and content safety test cases",
+    "expected": "accessibility-auditor",
+    "detected": "accessibility-auditor",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll run a comprehensive accessibility audit with standard, adversarial, and content safety test cases for you."
+  },
+  {
+    "skill": "accessibility-auditor",
+    "prompt": "Audit this site for a11y issues including banned words and content safety",
+    "expected": "accessibility-auditor",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you run an accessibility audit! However, I need a URL to audit. Could you please provide the websit"
+  },
+  {
+    "skill": "block-detector",
+    "prompt": "Detect and catalog all content blocks on this webpage",
+    "expected": "block-detector",
+    "detected": "none",
+    "method": "none",
+    "status": "FAIL",
+    "snippet": "I'd be happy to help detect and catalog content blocks on a webpage! However, I need a URL to analyze. Could you please"
+  },
+  {
+    "skill": "block-detector",
+    "prompt": "Extract page blocks with bounding boxes and CSS selectors",
+    "expected": "block-detector",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'll help you extract content blocks from a web page with bounding boxes and CSS selectors. Let me invoke the block de"
+  },
+  {
+    "skill": "block-detector",
+    "prompt": "Analyze the block structure of this page with semantic detection",
+    "expected": "block-detector",
+    "detected": "none",
+    "method": "none",
+    "status": "FAIL",
+    "snippet": "I'd be happy to help analyze the block structure of a web page! However, I need the URL of the page you'd like me to ana"
+  },
+  {
+    "skill": "content-graph",
+    "prompt": "Build a semantic content graph from my site's pages",
+    "expected": "content-graph",
+    "detected": "none",
+    "method": "text_match",
+    "status": "FALLBACK",
+    "snippet": "I'd be happy to help you build a semantic content graph from your site's pages! To get started, I need a bit more info"
+  },
+  {
+    "skill": "content-graph",
+    "prompt": "Map content relationships and find orphan pages in my navigation",
+    "expected": "content-graph",
+    "detected": "content-graph",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you map content relationships and identify orphan pages in your navigation. Let me invoke the content graph"
+  },
+  {
+    "skill": "content-graph",
+    "prompt": "Create a topic network with hub analysis from my query index",
+    "expected": "content-graph",
+    "detected": "content-graph",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the content-graph skill to build a content relationship graph with topic clustering and hub analysis from"
+  },
+  {
+    "skill": "data-intelligence-pipeline",
+    "prompt": "Build an end-to-end data pipeline from Slack channels to a dashboard",
+    "expected": "data-intelligence-pipeline",
+    "detected": "data-intelligence-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you build an end-to-end data intelligence pipeline from Slack channels to a dashboard. Let me invoke the spe"
+  },
+  {
+    "skill": "data-intelligence-pipeline",
+    "prompt": "Create an intelligence gathering pipeline that fetches, analyzes, and synthesizes data",
+    "expected": "data-intelligence-pipeline",
+    "detected": "data-intelligence-pipeline",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll help you build a data intelligence pipeline! Let me invoke the specialized skill for this."
+  },
+  {
+    "skill": "data-intelligence-pipeline",
+    "prompt": "Set up incremental Slack data extraction with KPI synthesis",
+    "expected": "data-intelligence-pipeline",
+    "detected": "incremental-processor",
+    "method": "tool_use",
+    "status": "FAIL",
+    "snippet": "I'll help you set up an incremental Slack data extraction pipeline with KPI synthesis. This involves two complementary"
+  },
+  {
+    "skill": "report-hub-generator",
+    "prompt": "Generate a single-page HTML report hub with interactive navigation",
+    "expected": "report-hub-generator",
+    "detected": "report-hub-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the report hub generator skill to create a single-page HTML report hub with interactive navigation for you"
+  },
+  {
+    "skill": "report-hub-generator",
+    "prompt": "Create an analysis dashboard with grid/list/detail view toggles",
+    "expected": "report-hub-generator",
+    "detected": "report-hub-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll create an interactive analysis dashboard with grid, list, and detail view toggles using the report hub generator"
+  },
+  {
+    "skill": "report-hub-generator",
+    "prompt": "Build a report hub page with sidebar nav and consistent theming",
+    "expected": "report-hub-generator",
+    "detected": "report-hub-generator",
+    "method": "tool_use",
+    "status": "PASS",
+    "snippet": "I'll invoke the report hub generator skill to build a single-page HTML report hub with interactive sidebar navigation"
+  },
+  {
+    "skill": "__negative__",
+    "prompt": "What is the weather today?",
+    "expected": "__none__",
+    "detected": "none",
+    "method": "none",
+    "status": "PASS",
+    "snippet": "I appreciate your question, but I'm not able to help with weather information. I'm **Claude Code**, an AI assistant spec"
+  },
+  {
+    "skill": "__negative__",
+    "prompt": "Help me write a Python fibonacci function",
+    "expected": "__none__",
+    "detected": "none",
+    "method": "none",
+    "status": "PASS",
+    "snippet": "Here's a Python Fibonacci function with a few different approaches:  ## Iterative Approach (Recommended)  ```python de"
+  },
+  {
+    "skill": "__negative__",
+    "prompt": "Explain how TCP/IP works",
+    "expected": "__none__",
+    "detected": "none",
+    "method": "none",
+    "status": "PASS",
+    "snippet": "# How TCP/IP Works  TCP/IP (Transmission Control Protocol/Internet Protocol) is the fundamental communication protocol s"
+  },
+  {
+    "skill": "__negative__",
+    "prompt": "What is the capital of France?",
+    "expected": "__none__",
+    "detected": "none",
+    "method": "none",
+    "status": "PASS",
+    "snippet": "The capital of France is **Paris**. It is the largest city in France and serves as the country's political, economic, an"
+  }
+]
