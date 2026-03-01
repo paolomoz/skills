@@ -64,7 +64,7 @@
       "signals": ["Railway", "Dockerfile", "deploy", "railway.json", "monorepo"]
     },
     "infographic-video": {
-      "description": "Create meeting recap videos. Splits meeting summaries into sections, generates infographics, produces two-host dialogue audio via ElevenLabs, and assembles into MP4 with background music. Use when user asks to create a meeting video, video recap, video summary, or turn meeting notes into a video.",
+      "description": "Create meeting recap videos with infographics, two-host dialogue audio, and MP4 assembly",
       "prompts": [
         "Create a video recap from this meeting summary",
         "Generate a meeting recap video with two-host dialogue",
@@ -73,7 +73,7 @@
       "signals": ["ElevenLabs", "dialogue", "infographic", "video", "meeting", "recap", "MP4"]
     },
     "infographics-generate-style": {
-      "description": "Create infographic style definitions. Analyzes reference images, PPTX files, URLs, or verbal descriptions to generate reusable infographic styles with visual elements and anti-patterns. Use when user asks to create an infographic style, generate style from reference images, or extract a visual style for infographics.",
+      "description": "Generate reusable infographic style definitions from reference images, PPTX files, or brand guidelines",
       "prompts": [
         "Create a new infographic style from this reference image",
         "Generate a style definition for my infographics based on our brand",
@@ -91,7 +91,7 @@
       "signals": ["Remotion", "highlight reel", "sizzle", "typewriter", "caption", "clip", "poster frame"]
     },
     "screenshot-capture": {
-      "description": "Take screenshots of web pages. Captures full-page and viewport screenshots with Puppeteer, removes overlays and cookie consent banners, supports before/after visual comparison. Use when user asks to screenshot, capture, or take visual snapshots of URLs.",
+      "description": "Capture full-page and viewport screenshots of URLs with Puppeteer and overlay removal",
       "prompts": [
         "Capture full-page screenshots of these URLs with overlay removal",
         "Take viewport screenshots of my website for visual comparison",
@@ -100,7 +100,7 @@
       "signals": ["screenshot", "Puppeteer", "viewport", "overlay", "cookie consent", "lazy-load", "capture"]
     },
     "brand-extractor": {
-      "description": "Extract brand identity and profiles from websites. Analyzes URLs, descriptions, or assets to produce a BrandProfile with tone attributes, positioning, color palette, and typography using multi-tier AI fallback. Use when user asks to extract brand identity, analyze brand profile, or build a brand profile from a URL.",
+      "description": "Extract brand identity profiles from websites including tone, positioning, colors, and typography",
       "prompts": [
         "Extract the brand identity from https://example.com",
         "Analyze the brand profile including tone and positioning for this company",
@@ -109,7 +109,7 @@
       "signals": ["BrandProfile", "brand", "tone", "positioning", "identity", "extraction"]
     },
     "brand-css-generator": {
-      "description": "Generate brand CSS and design tokens. Creates CSS custom properties, theme variables, and design branches from brand profiles with WCAG AA contrast enforcement. Use when user asks to generate CSS from a brand profile, create brand design tokens, or build a CSS theme from brand identity.",
+      "description": "Generate CSS custom properties and design tokens from brand profiles with WCAG AA contrast",
       "prompts": [
         "Generate CSS custom properties from this brand profile",
         "Create design tokens and a CSS theme from our brand colors",
@@ -121,24 +121,24 @@
       "description": "Bidirectionally sync CSS custom properties with Figma variables with CI drift detection",
       "prompts": [
         "Sync our CSS custom properties to Figma variables",
-        "Pull design tokens from Figma and generate CSS",
+        "Pull variables from Figma and sync them to CSS custom properties",
         "Run a diff to detect drift between our CSS tokens and Figma variables"
       ],
       "signals": ["Figma", "PUSH", "PULL", "DIFF", "variable", "token sync", "alias"]
     },
     "design-system-extractor": {
-      "description": "Extract design systems from live websites. Uses Puppeteer to capture computed styles, colors, typography, spacing, button variants, and layout tokens from any URL. Use when user asks to extract a design system, reverse-engineer CSS, or capture design tokens from a website.",
+      "description": "Extract design systems from live websites by capturing computed styles, colors, typography, and spacing via Puppeteer",
       "prompts": [
         "Extract the design system from this live website using Puppeteer",
         "Reverse-engineer the CSS tokens from https://example.com",
-        "Capture all design tokens (colors, typography, spacing) from this site"
+        "Extract the design system tokens from https://example.com including colors, typography, and spacing"
       ],
       "signals": ["design system", "computed style", "heading hierarchy", "button variant", "layout token", "color palette"]
     },
     "generative-page-pipeline": {
-      "description": "Generate web pages from queries. Transforms user queries into complete HTML web pages through a 5-stage pipeline: intent classification, block planning, parallel content generation, and DA persistence. Use when user asks to generate web pages, build an AI page generator, or create a content-to-page pipeline. NOT for generic AI model orchestration — use multi-model-orchestrator for that.",
+      "description": "Generate complete HTML web pages from queries through a 5-stage pipeline with intent classification and block planning",
       "prompts": [
-        "Build a multi-stage AI pipeline that generates web pages from queries",
+        "Build a generative page pipeline that creates HTML pages from user queries",
         "Create a page generation system with intent classification and content blocks",
         "Implement a generative page pipeline with RAG integration"
       ],
@@ -154,7 +154,7 @@
       "signals": ["conversational", "agent", "multi-turn", "brand brief", "iterative", "phase"]
     },
     "ai-image-generator": {
-      "description": "Generate AI images. Uses fal.ai FLUX, Vertex AI Imagen, and Gemini with provider fallbacks, embedding-based caching, and R2 storage. Supports batch generation, prompt enhancement, and LoRA. Use when user asks to generate AI images, create hero images, or set up AI-powered image generation. NOT for building generic Cloudflare apps — use cloudflare-fullstack for that.",
+      "description": "Generate AI images using fal.ai FLUX, Vertex Imagen, and Gemini with provider fallbacks and R2 caching",
       "prompts": [
         "Set up multi-provider AI image generation with fal.ai and Vertex",
         "Build an image generation service with caching and R2 storage",
@@ -172,7 +172,7 @@
       "signals": ["DA", "Document Authoring", "plain.html", "IMS", "preview", "publish", "AEM"]
     },
     "site-auditor": {
-      "description": "Audit website content quality. Cross-references query indexes, sitemaps, and navigation to find content gaps, orphan pages, and metadata issues across 11 gap categories. Use when user asks to audit a website for content gaps, check sitemap coverage, or find orphan pages.",
+      "description": "Audit website content quality by cross-referencing sitemaps, navigation, and query indexes for gaps",
       "prompts": [
         "Audit this website for content gaps by cross-referencing sitemap and nav",
         "Run a site quality audit comparing query index, sitemap, and navigation",
@@ -181,7 +181,7 @@
       "signals": ["content gap", "sitemap", "navigation", "query index", "orphan", "audit", "metadata"]
     },
     "pagespeed-audit": {
-      "description": "Run PageSpeed and Core Web Vitals audits. Collects CWV metrics (LCP, CLS, INP), RUM bundle data, and PSI API scores across multiple URLs with device segmentation. Use when user asks to test PageSpeed, audit Core Web Vitals, benchmark CWV, or analyze web performance metrics.",
+      "description": "Run PageSpeed Insights and Core Web Vitals audits collecting LCP, CLS, INP, and RUM data across URLs",
       "prompts": [
         "Run a Core Web Vitals audit across these URLs",
         "Collect PageSpeed scores and CWV data for my site",
@@ -190,7 +190,7 @@
       "signals": ["Core Web Vitals", "CWV", "PageSpeed", "PSI", "RUM", "LCP", "CLS", "INP"]
     },
     "accessibility-auditor": {
-      "description": "Run WCAG 2.1 AA accessibility audits and content safety checks. Generates test case matrices (standard, adversarial, brand-voice, content-safety), detects banned words, validates a11y compliance. Use when user asks for accessibility testing, WCAG audit, a11y validation, or content safety checks.",
+      "description": "Run WCAG 2.1 AA accessibility audits with test case matrices, banned word detection, and content safety checks",
       "prompts": [
         "Run a WCAG 2.1 AA compliance audit on these pages",
         "Test accessibility with standard, adversarial, and content safety test cases",
@@ -199,16 +199,16 @@
       "signals": ["WCAG", "accessibility", "a11y", "test case matri", "banned word", "content safety", "adversarial"]
     },
     "block-detector": {
-      "description": "Detect content blocks on web pages. Identifies and catalogs blocks using semantic analysis, class patterns, and data attributes, capturing bounding boxes and CSS selectors for each. Use when user asks to detect blocks, catalog page blocks, or extract content block structure from a URL.",
+      "description": "Detect and catalog content blocks on web pages with bounding boxes, CSS selectors, and semantic analysis",
       "prompts": [
-        "Detect and catalog all content blocks on this webpage",
+        "Detect and catalog all content blocks on https://example.com",
         "Extract page blocks with bounding boxes and CSS selectors",
-        "Analyze the block structure of this page with semantic detection"
+        "Analyze the block structure of https://example.com with semantic block detection"
       ],
       "signals": ["block detect", "bounding box", "CSS selector", "semantic", "data attribute", "class pattern"]
     },
     "content-graph": {
-      "description": "Build content relationship graphs. Maps semantic connections between pages, identifies orphan pages and hub nodes, performs topic clustering for navigation and recommendations. Use when user asks to build a content graph, map content relationships, find orphan pages, or create a topic network.",
+      "description": "Build content relationship graphs mapping semantic connections, orphan pages, hub nodes, and topic clusters",
       "prompts": [
         "Build a semantic content graph from my site's pages",
         "Map content relationships and find orphan pages in my navigation",
@@ -217,11 +217,11 @@
       "signals": ["content graph", "semantic", "node", "edge", "orphan", "hub", "topic cluster"]
     },
     "data-intelligence-pipeline": {
-      "description": "Build Slack and document intelligence pipelines. End-to-end 5-stage pipeline: fetch from Slack channels or documents, analyze with extraction prompts, synthesize KPIs, and render dashboards. Use when user asks to build a Slack data pipeline, extract intelligence from documents, or create KPI synthesis dashboards. NOT for generic file-level change detection — use incremental-processor for that.",
+      "description": "Build end-to-end Slack and document intelligence pipelines with KPI synthesis and dashboards",
       "prompts": [
         "Build an end-to-end data pipeline from Slack channels to a dashboard",
         "Create an intelligence gathering pipeline that fetches, analyzes, and synthesizes data",
-        "Set up incremental Slack data extraction with KPI synthesis"
+        "Build a Slack data pipeline that extracts messages, analyzes them, and synthesizes KPIs"
       ],
       "signals": ["data pipeline", "intelligence", "Slack", "synthesis", "KPI", "extraction", "dashboard"]
     },
