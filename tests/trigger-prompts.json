@@ -1,0 +1,218 @@
+{
+  "skills": {
+    "sse-streaming": {
+      "prompts": [
+        "Set up SSE streaming in my Cloudflare Worker",
+        "I need real-time server push events to the browser",
+        "Add event streaming with reconnection to my API"
+      ],
+      "signals": ["EventSource", "ReadableStream", "text/event-stream", "TransformStream", "SSE", "server-sent"]
+    },
+    "multi-model-orchestrator": {
+      "prompts": [
+        "Build a multi-stage AI pipeline that classifies then generates",
+        "I need to route prompts to different LLM models based on complexity",
+        "Create an orchestrator that chains Claude and GPT for different stages"
+      ],
+      "signals": ["ModelFactory", "pipeline", "orchestrat", "multi-model", "fallback chain", "stage"]
+    },
+    "cloudflare-fullstack": {
+      "prompts": [
+        "Build a full-stack app on Cloudflare Workers with D1 database",
+        "Create a serverless app with KV storage and R2 on Cloudflare",
+        "Set up a Cloudflare Workers project with wrangler and D1 migrations"
+      ],
+      "signals": ["wrangler", "Workers", "D1", "KV", "R2", "Vectorize", "Cloudflare"]
+    },
+    "session-context": {
+      "prompts": [
+        "Add multi-turn session tracking with KV storage",
+        "Implement conversation context that persists across page loads",
+        "Track user journey stages with sessionStorage and KV caching"
+      ],
+      "signals": ["SessionContextManager", "sessionStorage", "journey", "multi-turn", "TTL", "session"]
+    },
+    "incremental-processor": {
+      "prompts": [
+        "Build a hash-based change detection system for batch processing",
+        "I need resumable batch processing that skips unchanged items",
+        "Create an incremental pipeline that detects file changes via hashing"
+      ],
+      "signals": ["StateManager", "AnalysisIndex", "hash", "incremental", "resumable", "pacing"]
+    },
+    "multi-provider-fallback": {
+      "prompts": [
+        "Create an AI client that falls back between providers automatically",
+        "Build a multi-provider abstraction for Claude, GPT, and Gemini",
+        "I need automatic provider switching when one AI API fails"
+      ],
+      "signals": ["provider", "fallback", "multi-provider", "model preset", "abstraction"]
+    },
+    "railway-deploy": {
+      "prompts": [
+        "Deploy my monorepo to Railway with Dockerfiles",
+        "Set up Railway deployment with config-as-code for my services",
+        "I need to deploy multiple services to Railway from a monorepo"
+      ],
+      "signals": ["Railway", "Dockerfile", "deploy", "railway.json", "monorepo"]
+    },
+    "infographic-video": {
+      "prompts": [
+        "Create a video recap from this meeting summary",
+        "Generate a meeting recap video with two-host dialogue",
+        "Turn these meeting notes into a 5-minute video with infographics"
+      ],
+      "signals": ["ElevenLabs", "dialogue", "infographic", "video", "meeting", "recap", "MP4"]
+    },
+    "infographics-generate-style": {
+      "prompts": [
+        "Create a new infographic style from this reference image",
+        "Generate a style definition for my infographics based on our brand",
+        "Extract an infographic style from this PowerPoint presentation"
+      ],
+      "signals": ["style", "infographic", "Anti-Pattern", "visual element", "pre-flight", "reference"]
+    },
+    "highlight-reel": {
+      "prompts": [
+        "Create a highlight reel from these screen recordings",
+        "Make a 60-second sizzle reel from my demo videos",
+        "Build a product demo video with title cards and transitions from these clips"
+      ],
+      "signals": ["Remotion", "highlight reel", "sizzle", "typewriter", "caption", "clip", "poster frame"]
+    },
+    "screenshot-capture": {
+      "prompts": [
+        "Capture full-page screenshots of these URLs with overlay removal",
+        "Take viewport screenshots of my website for visual comparison",
+        "Screenshot these pages and handle cookie consent banners automatically"
+      ],
+      "signals": ["screenshot", "Puppeteer", "viewport", "overlay", "cookie consent", "lazy-load", "capture"]
+    },
+    "brand-extractor": {
+      "prompts": [
+        "Extract the brand identity from https://example.com",
+        "Analyze the brand profile including tone and positioning for this company",
+        "Build a comprehensive brand profile from this website URL"
+      ],
+      "signals": ["BrandProfile", "brand", "tone", "positioning", "identity", "extraction"]
+    },
+    "brand-css-generator": {
+      "prompts": [
+        "Generate CSS custom properties from this brand profile",
+        "Create design tokens and a CSS theme from our brand colors",
+        "Build WCAG AA compliant CSS variables from our brand identity"
+      ],
+      "signals": ["CSS custom propert", "design token", "WCAG", "brand", "Mode A", "Mode B", "contrast"]
+    },
+    "figma-token-sync": {
+      "prompts": [
+        "Sync our CSS custom properties to Figma variables",
+        "Pull design tokens from Figma and generate CSS",
+        "Run a diff to detect drift between our CSS tokens and Figma variables"
+      ],
+      "signals": ["Figma", "PUSH", "PULL", "DIFF", "variable", "token sync", "alias"]
+    },
+    "design-system-extractor": {
+      "prompts": [
+        "Extract the design system from this live website using Puppeteer",
+        "Reverse-engineer the CSS tokens from https://example.com",
+        "Capture all design tokens (colors, typography, spacing) from this site"
+      ],
+      "signals": ["design system", "computed style", "heading hierarchy", "button variant", "layout token", "color palette"]
+    },
+    "generative-page-pipeline": {
+      "prompts": [
+        "Build a multi-stage AI pipeline that generates web pages from queries",
+        "Create a page generation system with intent classification and content blocks",
+        "Implement a generative page pipeline with RAG integration"
+      ],
+      "signals": ["intent classif", "block planning", "page generat", "5-stage", "pipeline", "content generat"]
+    },
+    "conversational-page-builder": {
+      "prompts": [
+        "Build a chat-based website builder with multi-turn conversations",
+        "Create an interactive AI agent that builds pages through conversation",
+        "Implement a conversational page editor with real-time preview"
+      ],
+      "signals": ["conversational", "agent", "multi-turn", "brand brief", "iterative", "phase"]
+    },
+    "ai-image-generator": {
+      "prompts": [
+        "Set up multi-provider AI image generation with fal.ai and Vertex",
+        "Build an image generation service with caching and R2 storage",
+        "Create a hero image generator with FLUX and Imagen fallbacks"
+      ],
+      "signals": ["fal.ai", "FLUX", "Imagen", "Gemini", "image generat", "R2", "LoRA", "provider"]
+    },
+    "da-content-pipeline": {
+      "prompts": [
+        "Convert this HTML page to DA format and upload to AEM Edge Delivery",
+        "Build a pipeline to convert plain HTML to Document Authoring format",
+        "Upload content to DA with IMS authentication and trigger preview"
+      ],
+      "signals": ["DA", "Document Authoring", "plain.html", "IMS", "preview", "publish", "AEM"]
+    },
+    "site-auditor": {
+      "prompts": [
+        "Audit this website for content gaps by cross-referencing sitemap and nav",
+        "Run a site quality audit comparing query index, sitemap, and navigation",
+        "Find orphan pages and content gaps across my website"
+      ],
+      "signals": ["content gap", "sitemap", "navigation", "query index", "orphan", "audit", "metadata"]
+    },
+    "pagespeed-audit": {
+      "prompts": [
+        "Run a Core Web Vitals audit across these URLs",
+        "Collect PageSpeed scores and CWV data for my site",
+        "Benchmark performance with RUM data and PSI API for these pages"
+      ],
+      "signals": ["Core Web Vitals", "CWV", "PageSpeed", "PSI", "RUM", "LCP", "CLS", "INP"]
+    },
+    "accessibility-auditor": {
+      "prompts": [
+        "Run a WCAG 2.1 AA compliance audit on these pages",
+        "Test accessibility with standard, adversarial, and content safety test cases",
+        "Audit this site for a11y issues including banned words and content safety"
+      ],
+      "signals": ["WCAG", "accessibility", "a11y", "test case matri", "banned word", "content safety", "adversarial"]
+    },
+    "block-detector": {
+      "prompts": [
+        "Detect and catalog all content blocks on this webpage",
+        "Extract page blocks with bounding boxes and CSS selectors",
+        "Analyze the block structure of this page with semantic detection"
+      ],
+      "signals": ["block detect", "bounding box", "CSS selector", "semantic", "data attribute", "class pattern"]
+    },
+    "content-graph": {
+      "prompts": [
+        "Build a semantic content graph from my site's pages",
+        "Map content relationships and find orphan pages in my navigation",
+        "Create a topic network with hub analysis from my query index"
+      ],
+      "signals": ["content graph", "semantic", "node", "edge", "orphan", "hub", "topic cluster"]
+    },
+    "data-intelligence-pipeline": {
+      "prompts": [
+        "Build an end-to-end data pipeline from Slack channels to a dashboard",
+        "Create an intelligence gathering pipeline that fetches, analyzes, and synthesizes data",
+        "Set up incremental Slack data extraction with KPI synthesis"
+      ],
+      "signals": ["data pipeline", "intelligence", "Slack", "synthesis", "KPI", "extraction", "dashboard"]
+    },
+    "report-hub-generator": {
+      "prompts": [
+        "Generate a single-page HTML report hub with interactive navigation",
+        "Create an analysis dashboard with grid/list/detail view toggles",
+        "Build a report hub page with sidebar nav and consistent theming"
+      ],
+      "signals": ["report hub", "report dashboard", "view toggle", "sidebar", "grid", "list", "detail", "status indicator"]
+    }
+  },
+  "negative": [
+    "What is the weather today?",
+    "Help me write a Python fibonacci function",
+    "Explain how TCP/IP works",
+    "What is the capital of France?"
+  ]
+}
