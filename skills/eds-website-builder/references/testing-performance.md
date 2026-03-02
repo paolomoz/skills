@@ -118,6 +118,91 @@ if (window.innerWidth >= 900 || sessionStorage.getItem('fonts-loaded')) {
 
 This prevents font-loading from blocking LCP on mobile devices.
 
+## Battle-Tested PSI Fixes
+
+### CLS: body.appear Must Come After loadSection
+
+In `scripts.js`, the default boilerplate adds `body.appear` (making the page visible) BEFORE the first section's blocks are loaded:
+
+```javascript
+// BAD — causes ~0.170 CLS from hero CSS loading after page is visible
+decorateMain(main);
+document.body.classList.add('appear');
+await loadSection(main.querySelector('.section'), waitForFirstImage);
+```
+
+The hero-teaser block's CSS dramatically changes layout (from normal document flow to an overlay layout). If the page is visible before the CSS loads, you get a large layout shift.
+
+```javascript
+// GOOD — page only appears after hero section is fully loaded
+decorateMain(main);
+await loadSection(main.querySelector('.section'), waitForFirstImage);
+document.body.classList.add('appear');
+```
+
+### CLS: Block Images Need height: auto
+
+When block CSS sets `width: 100%` on images without `height: auto`, browsers can't reserve space from the HTML `width`/`height` attributes for lazy-loaded images. This causes layout shifts when images load.
+
+```css
+/* BAD — browser can't compute aspect ratio for lazy images */
+.my-block img {
+  width: 100%;
+}
+
+/* GOOD — browser uses width/height attrs to reserve space */
+.my-block img {
+  width: 100%;
+  height: auto;
+}
+```
+
+Check ALL block CSS files for `width: 100%` without `height: auto`.
+
+### Non-Composited Animations: Never Use transition: all
+
+`transition: all` includes `color` which is not GPU-compositable. Lighthouse flags this as a CLS contributor.
+
+```css
+/* BAD — color is non-compositable */
+.button { transition: all 0.2s ease; }
+
+/* GOOD — only animate compositable properties */
+.button { transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+```
+
+### Best Practices: Metadata Block 404 Errors
+
+Document-level `<div class="metadata">` (used for page Title/Description) gets treated as a visual block by `decorateBlocks()`, causing 404 errors for `blocks/metadata/metadata.js` and `blocks/metadata/metadata.css`. These console errors fail the Best Practices audit.
+
+Fix: intercept and remove metadata divs in `decorateMain()` before `decorateBlocks()` runs:
+
+```javascript
+export function decorateMain(main) {
+  decorateIcons(main);
+  buildAutoBlocks(main);
+  decorateSections(main);
+
+  // Remove document-level metadata before block decoration
+  main.querySelectorAll('.metadata').forEach((metaBlock) => {
+    metaBlock.querySelectorAll(':scope > div').forEach((row) => {
+      const key = row.children[0]?.textContent?.trim().toLowerCase();
+      const value = row.children[1]?.textContent?.trim();
+      if (key && value && !document.head.querySelector(`meta[name="${key}"]`)) {
+        const meta = document.createElement('meta');
+        meta.name = key;
+        meta.content = value;
+        document.head.appendChild(meta);
+      }
+    });
+    metaBlock.closest('.section')?.remove();
+  });
+
+  decorateBlocks(main);
+  decorateButtons(main);
+}
+```
+
 ## Responsive Testing
 
 ### Breakpoints

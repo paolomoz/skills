@@ -448,6 +448,88 @@ grep -oP 'href="\K[^"]+' drafts/nav.plain.html | grep -v '^#' | sort
 # Compare (links in nav not matching any page = broken)
 ```
 
+## Plain HTML Section Separators
+
+**CRITICAL: `plain-to-da.py` splits sections by `<hr>` tags.** Without `<hr>` between top-level `<div>` elements, all content merges into one section during DA upload. This causes:
+- Section-metadata text appearing visibly on the page ("Style / highlight")
+- Section styles applied incorrectly
+- Only the first section-metadata being consumed
+
+```html
+<!-- BAD — no separators, everything merges into one section -->
+<div>
+  <div class="hero-teaser">...</div>
+</div>
+<div>
+  <div class="introduction">...</div>
+  <div class="section-metadata">...</div>
+</div>
+
+<!-- GOOD — <hr> separates sections for DA processing -->
+<div>
+  <div class="hero-teaser">...</div>
+</div>
+<hr>
+<div>
+  <div class="introduction">...</div>
+  <div class="section-metadata">...</div>
+</div>
+```
+
+Verify before upload: every top-level `<div>` in a `.plain.html` file must be separated by `<hr>`.
+
+## Local Dev Server: getSiteRoot() Returns /drafts
+
+When running with `--html-folder drafts`, the AEM CLI serves pages at `/drafts/{sitename}/` not `/{sitename}/`. The `getSiteRoot()` function returns the first URL path segment, so it returns `/drafts` instead of `/{sitename}`.
+
+This means nav loads from `/drafts/nav` and footer from `/drafts/footer`. For local dev to work, you must also place copies of `nav.plain.html` and `footer.plain.html` at the `drafts/` root level:
+
+```
+drafts/
+├── nav.plain.html          ← copy for local dev (getSiteRoot = /drafts)
+├── footer.plain.html       ← copy for local dev
+└── {sitename}/
+    ├── nav.plain.html      ← canonical version
+    ├── footer.plain.html   ← canonical version
+    ├── index.plain.html
+    └── *.plain.html
+```
+
+## Footer 4-Section Structure
+
+The footer block CSS expects exactly **4 sections** in a 3-column grid layout:
+
+1. **Brand column**: Logo (p1), hidden ID (p2, hidden by CSS), copyright/trademark text (p3)
+2. **Site nav links**: Each link as a separate `<p>` (vertically stacked)
+3. **Utility links**: External/legal links, each as a separate `<p>`
+4. **Bottom row**: Full-width with border-top separator, right-aligned (e.g. approval code, date)
+
+```html
+<div>
+  <p><a href="/{site}/"><img src="https://cdn/logo.svg" alt="Brand"></a></p>
+  <p>APPROVAL-CODE</p>
+  <p>Trademark notice. &copy; Company 2026. All rights reserved.</p>
+</div>
+<hr>
+<div>
+  <p><a href="/{site}/efficacy">Efficacy</a></p>
+  <p><a href="/{site}/safety">Safety</a></p>
+  <p><a href="/{site}/dosing">Dosing</a></p>
+</div>
+<hr>
+<div>
+  <p><a href="https://external.com">Report Adverse Event</a></p>
+  <p><a href="/{site}/">Privacy Policy</a></p>
+  <p><a href="/{site}/">Terms of Use</a></p>
+</div>
+<hr>
+<div>
+  <p>Date of Preparation: March 2026</p>
+</div>
+```
+
+**Do not** use pipe-separated links in a single `<p>` — each link must be its own `<p>` for the CSS vertical stacking to work.
+
 ## Tips
 
 - **Sections are separated by `---`** (horizontal rule) in the authoring tool
