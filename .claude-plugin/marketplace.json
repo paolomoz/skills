@@ -82,6 +82,14 @@
         "./skills/data-intelligence-pipeline",
         "./skills/report-hub-generator"
       ]
+    },
+    {
+      "name": "eds-site-builder",
+      "description": "End-to-end AEM Edge Delivery Services site building, from briefing to deployment",
+      "source": "./",
+      "skills": [
+        "./skills/eds-website-builder"
+      ]
     }
   ]
 }
