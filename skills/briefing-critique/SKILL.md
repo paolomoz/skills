@@ -140,15 +140,106 @@ This is the critical step. The approach depends on the detected fidelity level.
 
 #### Strict Mode (verbatim copy specified)
 
-Normalize both the briefing text and draft text before comparing:
+**NEVER compare copy by reading — always run the diff script below.** Visual comparison misses single-word deletions that change clinical meaning (e.g., "adults and adolescents" → "adults" narrows the approved indication by one deleted word). The script catches every difference mechanically.
 
-1. Strip all HTML tags
-2. Decode HTML entities (`&amp;` → `&`, `&lt;` → `<`, `&ge;` → `≥`, `&ndash;` → `–`, etc.)
-3. Strip superscript reference markers (`<sup>1</sup>`, `<sup>†</sup>`)
-4. Collapse whitespace (multiple spaces/newlines → single space)
-5. Trim leading/trailing whitespace
+Run this script for each content page (excluding nav/footer). Replace `{sitename}` with the actual site name:
 
-Then compare paragraph-by-paragraph within each section. For table data, compare cell-by-cell.
+```bash
+python3 << 'PYEOF'
+import html, re, glob, difflib, json
+
+SITENAME = "{sitename}"
+
+def normalize(text):
+    """Strip HTML tags, decode entities, collapse whitespace."""
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = html.unescape(text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+# --- Extract briefing paragraphs keyed by page ---
+with open(f'sites/{SITENAME}/briefing.md') as f:
+    briefing = f.read()
+
+# Split into page sections
+page_sections = re.split(r'## PAGE \d+:\s*', briefing)[1:]
+page_labels = re.findall(r'## PAGE \d+:\s*(.+)', briefing)
+
+findings = []
+for label, section in zip(page_labels, page_sections):
+    # Extract text fields from briefing section
+    fields = re.findall(
+        r'\*\*(?:Heading|Body text|Body text \(continued\)|Card heading|Card body|Card link):\*\*\s*(.+?)(?=\n\n|\n\*\*[A-Z]|\Z)',
+        section, re.DOTALL
+    )
+    briefing_texts = []
+    for f in fields:
+        t = f.strip().split(' → ')[0]  # strip CTA arrow targets
+        t = t.replace('\\\n', ' ').replace('\\', '')
+        t = normalize(t)
+        if len(t) > 15:
+            briefing_texts.append(t)
+
+    # Determine draft filename from page label
+    slug_map = {}
+    url_match = re.search(r'\*\*URL path:\*\*\s*/\w+/(\S*)', section)
+    slug = url_match.group(1) if url_match and url_match.group(1) else 'index'
+    draft_path = f'drafts/{SITENAME}/{slug}.plain.html' if slug else f'drafts/{SITENAME}/index.plain.html'
+
+    try:
+        with open(draft_path) as df:
+            draft_html = df.read()
+    except FileNotFoundError:
+        findings.append({"page": slug, "severity": "CRITICAL", "msg": f"Draft file not found: {draft_path}"})
+        continue
+
+    # Extract text from draft paragraphs and headings
+    draft_paras = re.findall(r'<(?:p|h[1-6])(?:\s[^>]*)?>(.+?)</(?:p|h[1-6])>', draft_html, re.DOTALL)
+    # Also extract table cell text
+    draft_cells = re.findall(r'<div>([^<]+)</div>', draft_html)
+    all_draft = [normalize(p) for p in draft_paras + draft_cells if len(normalize(p)) > 10]
+
+    # For each briefing paragraph, find the best match in the draft
+    for bt in briefing_texts:
+        best_ratio = 0
+        best_draft = ""
+        for dt in all_draft:
+            r = difflib.SequenceMatcher(None, bt, dt).ratio()
+            if r > best_ratio:
+                best_ratio = r
+                best_draft = dt
+        if best_ratio >= 0.85 and best_ratio < 1.0:
+            # Near-match: show what changed
+            findings.append({
+                "page": slug or "index", "severity": "CRITICAL",
+                "briefing": bt[:300], "draft": best_draft[:300],
+                "ratio": f"{best_ratio:.3f}"
+            })
+        elif best_ratio < 0.85:
+            # No close match found — paragraph may be missing
+            findings.append({
+                "page": slug or "index", "severity": "CRITICAL",
+                "msg": f"Briefing text not found in draft (best match ratio: {best_ratio:.2f})",
+                "briefing": bt[:300], "draft": best_draft[:300] if best_draft else "(none)"
+            })
+
+if findings:
+    print(f"COPY DIFF FINDINGS ({len(findings)}):\n")
+    for f in findings:
+        print(f"[{f['severity']}] {f['page']}")
+        if 'msg' in f:
+            print(f"  {f['msg']}")
+        if 'briefing' in f:
+            print(f"  BRIEFING: {f['briefing']}")
+        if 'draft' in f:
+            print(f"  DRAFT:    {f['draft']}")
+        print()
+else:
+    print("ALL COPY MATCHES — no differences found between briefing and drafts.")
+PYEOF
+```
+
+Review the script output. Each finding shows the exact briefing text and draft text side by side. Classify findings using these rules:
 
 **Important exclusions** — do NOT flag these as copy differences:
 - `<strong>` wrapping on CTAs (this is structural markup per block conventions)
@@ -156,6 +247,7 @@ Then compare paragraph-by-paragraph within each section. For table data, compare
 - Link `<a href>` wrapping around text
 - `<br>` tags within paragraphs
 - Bullet list formatting differences (`<ul><li>` vs paragraph text)
+- Typographic quote substitution (`'` vs `'`) — these are rendering-equivalent
 
 | Finding | Severity |
 |---------|----------|
@@ -272,60 +364,187 @@ These checks span all pages in the site:
 
 ### Step 9: Published Content Verification (AEM drift detection)
 
-After validating local drafts, check whether the **published AEM content** still matches the briefing. Content can drift after upload if someone edits directly in DA.
+After validating local drafts, check whether the **published AEM content** still matches the briefing. Content can drift after upload if someone edits directly in DA. **This step is not optional** — it catches changes that are invisible in the local drafts.
 
 #### 9a: Determine the AEM preview base URL
 
-Extract the GitHub owner and repo from the git remote:
-
 ```bash
-# Get owner/repo from git remote
 remote_url=$(git remote get-url origin 2>/dev/null)
-# Extract owner and repo (handles both HTTPS and SSH formats)
 owner=$(echo "$remote_url" | sed -E 's#.*/([^/]+)/[^/]+(\.git)?$#\1#')
 repo=$(echo "$remote_url" | sed -E 's#.*/([^/]+)(\.git)?$#\1#')
 branch=$(git branch --show-current)
+echo "AEM preview: https://${branch}--${repo}--${owner}.aem.page"
 ```
 
-Construct the AEM preview base URL: `https://{branch}--{repo}--{owner}.aem.page`
+#### 9b: Fetch and check each page individually
 
-#### 9b: Fetch published content for each page
+**IMPORTANT — URL pattern**: The home page endpoint is `/{sitename}/index.plain.html`, NOT `/{sitename}/.plain.html`. The latter returns 404 even when the page exists.
 
-For each page in the site inventory (including nav and footer), fetch the `.plain.html` from AEM:
+Check each page independently. Do NOT skip all pages because one returns 404.
 
 ```bash
-# Fetch published content for a page
-curl -sL "https://{branch}--{repo}--{owner}.aem.page/{sitename}/{page}.plain.html"
-# For the home page:
-curl -sL "https://{branch}--{repo}--{owner}.aem.page/{sitename}/.plain.html"
-# For nav/footer:
-curl -sL "https://{branch}--{repo}--{owner}.aem.page/{sitename}/nav.plain.html"
-curl -sL "https://{branch}--{repo}--{owner}.aem.page/{sitename}/footer.plain.html"
+# Check each page individually — use index.plain.html for the home page
+AEM_BASE="https://{branch}--{repo}--{owner}.aem.page/{sitename}"
+for page in index luminos-data safety dosing how-treluxia-works resources nav footer; do
+  code=$(curl -sI -o /dev/null -w '%{http_code}' "${AEM_BASE}/${page}.plain.html")
+  echo "$code $page"
+done
 ```
 
-If any page returns a non-200 status or an error page, note it but do not flag as a finding — the page may not have been uploaded/previewed yet. If **no** pages are reachable (all return non-200), skip this step entirely and note in the report: "Published content verification skipped — site not yet available on AEM preview."
+If a page returns 200, include it in the drift check. If it returns non-200, note it as LOW but continue checking the others. Only skip this entire step if **every single page** returns non-200.
 
-#### 9c: Compare published content vs briefing
+#### 9c + 9d: Run the AEM drift diff script
 
-For each successfully fetched page, apply the **same copy fidelity checks from Step 5** to the published content. This catches edits made directly in DA after upload.
+Run this script to compare published AEM content against both the briefing AND the local drafts. It reuses the same normalization and matching logic as Step 5 but fetches from AEM instead of reading local files. Replace `{sitename}` and the AEM base URL:
 
-**Important**: DA may transform the HTML during upload/processing. Apply these additional normalizations before comparing:
-1. DA may rewrite image URLs (e.g., from CDN URLs to `./media_xxx` paths) — exclude image `src`/`srcset` attributes from text comparison
-2. DA may add or remove whitespace — use the same whitespace normalization as Step 5
-3. DA may convert some HTML entities differently — decode all entities before comparing
+```bash
+python3 << 'PYEOF'
+import html, re, difflib, subprocess
 
-#### 9d: Compare published content vs local drafts
+SITENAME = "{sitename}"
+AEM_BASE = "https://{branch}--{repo}--{owner}.aem.page/{sitename}"
 
-Also diff the published AEM content against the local draft for each page. This detects **any** post-upload drift, regardless of whether it violates the briefing:
+# Pages to check: (slug, draft_filename)
+PAGES = [
+    ("index", "index"),
+    ("luminos-data", "luminos-data"),
+    ("safety", "safety"),
+    ("dosing", "dosing"),
+    ("how-treluxia-works", "how-treluxia-works"),
+    ("resources", "resources"),
+]
 
-1. Normalize both the local draft and published HTML (strip tags, decode entities, collapse whitespace)
-2. Compare the normalized text
-3. If they differ, identify the specific text segments that changed
+def normalize(text):
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = html.unescape(text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def fetch_aem(slug):
+    """Fetch AEM page, return None if not available."""
+    r = subprocess.run(
+        ['curl', '-sL', '-w', '\\n%{http_code}', f'{AEM_BASE}/{slug}.plain.html'],
+        capture_output=True, text=True, timeout=15
+    )
+    lines = r.stdout.rsplit('\\n', 1)
+    body = lines[0] if len(lines) > 1 else r.stdout
+    code = lines[-1].strip() if len(lines) > 1 else '000'
+    if not code.startswith('2') or 'Page not found' in body[:200]:
+        return None
+    return body
+
+def extract_text_paragraphs(html_content):
+    """Extract text from <p>, <h1-6>, and <div> cells, normalized."""
+    paras = re.findall(r'<(?:p|h[1-6])(?:\s[^>]*)?>(.+?)</(?:p|h[1-6])>', html_content, re.DOTALL)
+    cells = re.findall(r'<div>([^<]+)</div>', html_content)
+    return [normalize(p) for p in paras + cells if len(normalize(p)) > 10]
+
+# --- Read briefing ---
+with open(f'sites/{SITENAME}/briefing.md') as f:
+    briefing = f.read()
+
+page_sections = re.split(r'## PAGE \d+:\s*', briefing)[1:]
+page_labels = re.findall(r'## PAGE \d+:\s*(.+)', briefing)
+
+# Build briefing text per page slug
+briefing_by_slug = {}
+for label, section in zip(page_labels, page_sections):
+    url_match = re.search(r'\*\*URL path:\*\*\s*/\w+/(\S*)', section)
+    slug = url_match.group(1) if url_match and url_match.group(1) else 'index'
+    fields = re.findall(
+        r'\*\*(?:Heading|Body text|Body text \(continued\)|Card heading|Card body):\*\*\s*(.+?)(?=\n\n|\n\*\*[A-Z]|\Z)',
+        section, re.DOTALL
+    )
+    texts = []
+    for f in fields:
+        t = f.strip().replace('\\\n', ' ').replace('\\', '')
+        t = normalize(t)
+        if len(t) > 15:
+            texts.append(t)
+    briefing_by_slug[slug] = texts
+
+findings = []
+unreachable = 0
+
+for slug, _ in PAGES:
+    aem_html = fetch_aem(slug)
+    if aem_html is None:
+        unreachable += 1
+        findings.append({"page": slug, "severity": "LOW", "type": "unreachable",
+                         "msg": f"AEM page not reachable (not yet uploaded/previewed)"})
+        continue
+
+    aem_texts = extract_text_paragraphs(aem_html)
+
+    # --- 9c: Compare AEM vs briefing ---
+    for bt in briefing_by_slug.get(slug, []):
+        best_ratio = 0
+        best_aem = ""
+        for at in aem_texts:
+            r = difflib.SequenceMatcher(None, bt, at).ratio()
+            if r > best_ratio:
+                best_ratio = r
+                best_aem = at
+        if best_ratio >= 0.85 and best_ratio < 1.0:
+            findings.append({
+                "page": slug, "severity": "CRITICAL", "type": "aem-vs-briefing",
+                "briefing": bt[:300], "aem": best_aem[:300], "ratio": f"{best_ratio:.3f}"
+            })
+
+    # --- 9d: Compare AEM vs local draft ---
+    try:
+        with open(f'drafts/{SITENAME}/{slug}.plain.html') as df:
+            local_html = df.read()
+        local_texts = extract_text_paragraphs(local_html)
+        # Compare each local paragraph against AEM
+        for lt in local_texts:
+            best_ratio = 0
+            best_aem = ""
+            for at in aem_texts:
+                r = difflib.SequenceMatcher(None, lt, at).ratio()
+                if r > best_ratio:
+                    best_ratio = r
+                    best_aem = at
+            if best_ratio >= 0.85 and best_ratio < 1.0:
+                findings.append({
+                    "page": slug, "severity": "HIGH", "type": "aem-vs-draft",
+                    "local": lt[:300], "aem": best_aem[:300], "ratio": f"{best_ratio:.3f}"
+                })
+    except FileNotFoundError:
+        pass
+
+# --- Report ---
+if unreachable == len(PAGES):
+    print("AEM DRIFT CHECK SKIPPED — no pages reachable on AEM preview.")
+else:
+    real_findings = [f for f in findings if f["type"] != "unreachable"]
+    if real_findings:
+        print(f"AEM DRIFT FINDINGS ({len(real_findings)}):\n")
+        for f in real_findings:
+            print(f"[{f['severity']}] [AEM] {f['page']} ({f['type']})")
+            if 'briefing' in f:
+                print(f"  BRIEFING: {f['briefing']}")
+            if 'local' in f:
+                print(f"  LOCAL:    {f['local']}")
+            if 'aem' in f:
+                print(f"  AEM:      {f['aem']}")
+            if 'msg' in f:
+                print(f"  {f['msg']}")
+            print()
+    else:
+        reachable = len(PAGES) - unreachable
+        print(f"NO AEM DRIFT — all {reachable} reachable pages match the briefing and local drafts.")
+    if unreachable > 0 and unreachable < len(PAGES):
+        unreachable_pages = [f['page'] for f in findings if f['type'] == 'unreachable']
+        print(f"\nNote: {unreachable} page(s) not reachable on AEM: {', '.join(unreachable_pages)}")
+PYEOF
+```
+
+Review the script output. Each finding is pre-classified:
 
 | Finding | Severity |
 |---------|----------|
-| Published heading text differs from briefing (strict mode) | CRITICAL |
-| Published body copy differs from briefing (strict mode) | CRITICAL |
+| Published text differs from briefing (strict mode) | CRITICAL |
 | Published clinical data differs from briefing | CRITICAL |
 | Published content differs from local draft (text drift detected) | HIGH |
 | Published page not reachable (not yet uploaded) | LOW |
@@ -451,7 +670,8 @@ After writing the file, open it in the browser and tell the user the path. Remin
 | Entity encoding differences (`&ge;` vs `≥`) | Briefing uses HTML entities, draft uses Unicode | Normalization handles this — decode entities in both sources before comparing |
 | Table cell ordering differs | Table rows or columns reordered in draft | Compare cell content regardless of position within the same table; flag if data is missing entirely |
 | Published content check flags every image URL | DA rewrites image URLs to `./media_xxx` paths during upload | Step 9c excludes image `src`/`srcset` from text comparison — only compare text content |
-| Published content returns 404 for all pages | Site not yet uploaded/previewed on AEM | Step 9b skips the entire published check and notes it in the report |
+| Published content returns 404 for home page only | Used `/.plain.html` instead of `/index.plain.html` | The home page endpoint is `/{sitename}/index.plain.html` — see Step 9b URL pattern note |
+| Published content returns 404 for all pages | Site not yet uploaded/previewed on AEM | Step 9 skips the published check and notes it in the report |
 | Published content differs from local draft but matches briefing | Someone fixed an error directly in DA | Flag as HIGH (draft-to-published drift) so local drafts can be re-synced |
 | False positives from DA whitespace changes | DA normalizes whitespace differently | Apply aggressive whitespace normalization (collapse all runs, trim) before comparing |
 
