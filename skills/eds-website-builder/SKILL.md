@@ -28,6 +28,7 @@ If the user already knows what they want, jump straight to the relevant section.
  5. Block Development    → Build blocks (JS decoration + CSS styling)
  6. Image Generation     → AI-generated site images (Gemini / FLUX / Firefly)
  7. Content Authoring    → Create content in CMS or local drafts
+ 7b. Parallel Page Gen   → Spawn parallel agents to generate all pages concurrently
  8. DA Integration       → Programmatic content upload via service token (optional)
  9. Universal Editor     → Component definitions, models, filters, instrumentation (optional)
 10. Three-Phase Loading  → Eager/lazy/delayed resource loading strategy
@@ -425,6 +426,10 @@ Before building a block, define its content model — the table structure author
 
 The block name is the table header. Each row/cell maps to `block > div > div` in the DOM. Design your content model to be author-friendly and handle missing fields gracefully.
 
+### 4.5 Block Markup Reference
+
+Maintain a `blocks/BLOCK-REFERENCE.md` file documenting the expected `.plain.html` markup structure for every block in the project. This serves as the authoritative reference for content authoring — both for human authors and for parallel page generation agents. Include: class name, HTML snippet showing row/cell structure, and key notes per block.
+
 **For detailed content planning patterns, read `references/content-patterns.md`.**
 
 ---
@@ -642,6 +647,112 @@ grep -oP 'href="\K[^"]+' drafts/nav.plain.html | grep -v '^#' | sort
 ```
 
 **For navigation structure patterns and consistency checklists, see `references/content-patterns.md`.**
+
+---
+
+## Phase 7b: Parallel Page Generation (Briefing-Driven Sites)
+
+When a site has a complete briefing with final copy for every page, all pages can be generated concurrently using parallel agents. Each page is independent — same accordion, same CDN base, same block patterns — so no agent needs another agent's output.
+
+### 7b.1 Prerequisites (Sequential)
+
+Complete these steps sequentially before spawning parallel agents:
+
+```
+1. Generate images       → ./tools/generate-images.sh {sitename}
+2. Deploy to CDN         → ./tools/deploy-images.sh {sitename}
+3. Create nav + footer   → Write drafts/{sitename}/nav.plain.html & footer.plain.html
+```
+
+These produce the **shared context** that all pages need.
+
+### 7b.2 Extract Shared Context Bundle
+
+Before spawning agents, assemble a context bundle containing everything each agent needs. This avoids each agent redundantly reading the same files.
+
+```
+Shared context bundle:
+├── CDN base URL          → https://{sitename}-images.pages.dev/
+├── Site prefix           → /{sitename}/
+├── Accordion content     → The prescribing info / AE reporting / references HTML
+│                           (identical on every page — extract once)
+├── Metadata block        → HTML pattern for page metadata
+├── Block reference       → blocks/BLOCK-REFERENCE.md (markup patterns for all blocks)
+└── Image <picture> pattern → <picture><source type="image/webp" srcset="CDN_URL"><img src="CDN_URL" alt="..."></picture>
+```
+
+### 7b.3 Spawn Parallel Agents
+
+Slice the briefing into per-page sections. Each agent receives:
+- Its **page-specific briefing section** (copy, block types, image filenames, metadata)
+- The **shared context bundle** (CDN URL, accordion HTML, block reference)
+- The **output path** (e.g. `drafts/{sitename}/efficacy.plain.html`)
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Main Agent                         │
+│  1. Sequential setup (images, CDN, nav, footer)     │
+│  2. Extract shared context bundle                    │
+│  3. Spawn N page agents in parallel                  │
+│  4. Wait for all to complete                         │
+│  5. Upload to DA + preview                           │
+└──────────┬──────┬──────┬──────┬──────┬──────┬───────┘
+           │      │      │      │      │      │
+           ▼      ▼      ▼      ▼      ▼      ▼
+        Page 1  Page 2  Page 3  Page 4  Page 5  Page 6
+        Agent   Agent   Agent   Agent   Agent   Agent
+```
+
+Use the Agent tool with `subagent_type: "general-purpose"` for each page. Launch all agents in a **single message** with multiple tool calls so they run concurrently:
+
+```javascript
+// Pseudocode — launch all page agents in one message
+for (const page of pages) {
+  Agent({
+    description: `Generate ${page.name} page`,
+    prompt: `
+      Create the file: drafts/${sitename}/${page.filename}
+
+      ## Shared Context
+      ${sharedContextBundle}
+
+      ## Page Content (from briefing)
+      ${page.briefingSection}
+
+      ## Block Reference
+      ${blockReference}
+
+      Write the complete .plain.html file using the exact copy from the briefing.
+      Map content to the specified block types using the markup patterns from the block reference.
+      Use CDN URLs for all images: https://${sitename}-images.pages.dev/${imageName}
+      Do not modify any copy text — it is final approved content.
+    `,
+    subagent_type: "general-purpose"
+  });
+}
+```
+
+### 7b.4 Post-Generation (Sequential)
+
+After all agents complete:
+
+```bash
+# Verify no local image paths
+grep -rn 'src="/' drafts/{sitename}/ --include='*.html' && echo "BLOCKED" || echo "OK"
+
+# Upload to DA
+./tools/upload-to-da.sh {sitename}
+
+# Preview on AEM CDN
+./tools/preview-all.sh {sitename}
+```
+
+### Key Design Decisions
+
+- **Why parallel?** A 6-page site takes ~2 minutes sequentially per page. Parallel generation reduces wall-clock time to ~2 minutes total regardless of page count.
+- **Why extract shared context?** Without it, each agent independently reads the briefing, block reference, and existing files — multiplying file reads by N and wasting tokens on redundant context.
+- **Why not parallel for nav/footer?** Nav and footer reference page names and URLs. They're small files that take seconds — not worth parallelizing, and they serve as a sanity check that all page names are consistent before generation begins.
+- **Copy fidelity rule**: When the briefing marks copy as final/approved, agents must use text exactly as written. Image alt text may be adapted to match generated images, but headings, body text, CTAs, and metadata must be verbatim.
 
 ---
 
