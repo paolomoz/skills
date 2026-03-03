@@ -107,6 +107,58 @@ z-index: 2  — content row container
 
 All three fixes are required. Missing any one produces text that looks transparent or washed out.
 
+### Dev server won't serve new site paths until DA upload
+
+The AEM dev server with `--html-folder drafts` **does not register new page paths from local files alone**. It proxies every request to the remote AEM server (`https://main--{repo}--{owner}.aem.page/`) first. If the remote server returns 404 (because the content hasn't been uploaded to DA yet), the dev server returns 404 too — even though the `.plain.html` file exists locally.
+
+The `--html-folder` flag **replaces content** for paths the remote server already knows about; it does **not create new paths**. For a brand-new site subfolder (e.g. `/mysite/`), you must:
+
+1. Upload all drafts to DA: `./tools/upload-to-da.sh {sitename}`
+2. Preview all pages: `./tools/preview-all.sh {sitename}`
+3. **Then** the dev server will serve the pages at `http://localhost:3000/{sitename}/`
+
+**Do not waste time debugging 404s on the dev server for new sites — upload to DA first.**
+
+### Parallel agents produce broken block structure
+
+When subagents generate `.plain.html` files, they frequently place block content **outside** the class div instead of inside it, producing empty block elements that render nothing:
+
+```html
+<!-- BROKEN — agent puts content outside the class div -->
+<div>
+  <div><picture>...</picture></div>
+</div>
+<div>
+  <div>
+    <h2>Heading</h2>
+    <p>Body text</p>
+  </div>
+</div>
+<div class="columns-teaser">
+</div>
+
+<!-- CORRECT — content is INSIDE the class div -->
+<div class="columns-teaser">
+  <div>
+    <div><picture>...</picture></div>
+    <div>
+      <h2>Heading</h2>
+      <p>Body text</p>
+    </div>
+  </div>
+</div>
+```
+
+Agents may also put page metadata in `<head>` meta tags instead of a `<div class="metadata">` block. DA requires the metadata block to set page title and description — `<head>` meta tags are ignored.
+
+Note: `<html><body><main>` wrappers are fine — DA requires them for upload. The upload tool adds them if missing. The problem is purely about block nesting and metadata placement.
+
+**Mitigations:**
+1. Include a complete, known-good reference file (`examples/reference-page.plain.html`) in every agent prompt — not just block snippets
+2. Add explicit rules about block nesting: "ALL content MUST be INSIDE the block's class div"
+3. Run structural validation after generation (see Phase 7b.4)
+4. Be prepared to rewrite broken files — the main agent should read and verify every file
+
 ---
 
 ## Phase 1: Project Setup
@@ -685,6 +737,10 @@ Shared context bundle:
 │                            context. Do NOT let individual agents re-generate this.)
 ├── Metadata block        → HTML pattern for page metadata
 ├── Block reference       → blocks/BLOCK-REFERENCE.md (markup patterns for all blocks)
+├── Reference example     → A complete, known-good .plain.html file showing correct
+│                           nesting for ALL block types (see examples/reference-page.plain.html).
+│                           Include the FULL file content in each agent's prompt.
+│                           This is the single most effective way to prevent broken nesting.
 └── Image <picture> pattern → <picture><source type="image/webp" srcset="CDN_URL"><img src="CDN_URL" alt="..."></picture>
 ```
 
@@ -720,6 +776,17 @@ for (const page of pages) {
     prompt: `
       Create the file: drafts/${sitename}/${page.filename}
 
+      ## CRITICAL STRUCTURAL RULES
+      1. ALL block content MUST be INSIDE the block's class div. NEVER put content outside it.
+         WRONG: <div><h2>Text</h2></div><div class="introduction"></div>
+         RIGHT: <div class="introduction"><div><div><h2>Text</h2></div></div></div>
+      2. Page metadata MUST use a <div class="metadata"> block, NOT <head><meta> tags.
+         DA ignores <head> meta tags — only the metadata block sets page title and description.
+      3. Use the reference example below as your structural template — match its nesting exactly.
+
+      ## Reference Example (correct .plain.html structure)
+      ${referenceExampleFileContent}
+
       ## Shared Context
       ${sharedContextBundle}
 
@@ -739,6 +806,8 @@ for (const page of pages) {
 }
 ```
 
+**IMPORTANT: Include the full content of `examples/reference-page.plain.html`** in each agent's prompt (read it once, embed the text). Block reference snippets alone are insufficient — agents misinterpret the nesting. A complete example file showing correct structure for hero-teaser, cards-teaser, columns-teaser, tabs-large, introduction, title, table-data, accordion, section-metadata, and metadata blocks eliminates the most common structural errors.
+
 ### 7b.4 Post-Generation: Upload, Preview, and Open (Sequential)
 
 **IMPORTANT: Execute all of these steps automatically** once all page agents complete. Do not wait for the user to ask — the whole point of parallel generation is an end-to-end pipeline that delivers a viewable site.
@@ -754,6 +823,26 @@ grep -Pn 'href="/{sitename}/"' drafts/{sitename}/nav.plain.html drafts/{sitename
 ```
 
 Nav/footer links that equal `/{sitename}/` (other than the logo home link and Login CTA) are likely unfilled placeholders. Cross-reference against the briefing's nav/footer sections and replace with the specified URLs.
+
+**Step 1c — Structural validation** (blocks upload if any issues are found):
+
+This step catches the most common agent generation failures. Run all three checks:
+
+```bash
+# 1. Every content page has accordion and metadata blocks
+echo "--- Accordion count (expect 1 per content page, 0 for nav/footer) ---"
+grep -c 'class="accordion"' drafts/{sitename}/*.plain.html
+echo "--- Metadata count (expect 1 per content page, 0 for nav/footer) ---"
+grep -c 'class="metadata"' drafts/{sitename}/*.plain.html
+
+# 2. No empty block class divs (broken nesting — content ended up outside the block)
+grep -n 'class="\(hero-teaser\|columns-teaser\|cards-teaser\|tabs-large\|introduction\|title\|table-data\|accordion\)">' drafts/{sitename}/*.plain.html | grep '>\s*$' && echo "BLOCKED: empty block divs found — content is outside the block" || echo "OK: no empty block divs"
+
+# 3. No metadata in <head> tags (DA ignores these — must be a metadata block div)
+grep -rn '<head>' drafts/{sitename}/*.plain.html | grep -v nav | grep -v footer && echo "WARNING: check that metadata uses <div class='metadata'>, not <head><meta> tags" || echo "OK"
+```
+
+If any check fails, **read the broken file, compare against `examples/reference-page.plain.html`, and rewrite it** with correct nesting. Do not attempt surgical fixes on structurally broken files — rewriting is faster and more reliable.
 
 **Step 2 — Upload all drafts to DA** (including nav and footer):
 ```bash
@@ -1035,3 +1124,4 @@ Read these for detailed guidance on specific topics:
 | `references/da-integration.md` | DA service token auth, programmatic content upload, format conversion, preview API |
 | `references/universal-editor.md` | UE component definitions, models, filters, DA plugin fields, MutationObserver instrumentation |
 | `references/testing-performance.md` | Linting, PageSpeed optimization, accessibility testing, responsive QA |
+| `examples/reference-page.plain.html` | Complete, known-good `.plain.html` showing correct nesting for all block types. Include in parallel agent prompts to prevent structural errors. |
