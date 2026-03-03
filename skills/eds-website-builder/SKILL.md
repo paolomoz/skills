@@ -732,20 +732,31 @@ for (const page of pages) {
 }
 ```
 
-### 7b.4 Post-Generation (Sequential)
+### 7b.4 Post-Generation: Upload, Preview, and Open (Sequential)
 
-After all agents complete:
+**IMPORTANT: Execute all of these steps automatically** once all page agents complete. Do not wait for the user to ask — the whole point of parallel generation is an end-to-end pipeline that delivers a viewable site.
 
+**Step 1 — Verify no local image paths** (blocks upload if any are found):
 ```bash
-# Verify no local image paths
-grep -rn 'src="/' drafts/{sitename}/ --include='*.html' && echo "BLOCKED" || echo "OK"
+grep -rn 'src="/' drafts/{sitename}/ --include='*.html' && echo "BLOCKED: fix local paths before uploading" || echo "OK: no local paths"
+```
 
-# Upload to DA
+**Step 2 — Upload all drafts to DA** (including nav and footer):
+```bash
 ./tools/upload-to-da.sh {sitename}
+```
 
-# Preview on AEM CDN
+**Step 3 — Preview all pages on AEM CDN** (including nav and footer — they must be previewed or the header/footer won't render on the live preview):
+```bash
 ./tools/preview-all.sh {sitename}
 ```
+
+**Step 4 — Open the previewed homepage in the browser**:
+```bash
+open "https://main--{repo}--{owner}.aem.page/{sitename}/"
+```
+
+This closes the feedback loop — the user sees the fully rendered site with header, footer, and all blocks decorated without needing to start a local dev server or run any commands themselves.
 
 ### Key Design Decisions
 
