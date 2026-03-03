@@ -84,6 +84,11 @@ List all expected pages and their found/missing status. Include `nav.plain.html`
 - Regulatory links present (Report Adverse Event, Medical Information, Privacy, Terms, Accessibility)
 - Date of preparation present
 
+#### Placeholder detection:
+- Any `href` in nav/footer that equals `/{sitename}/` and is NOT the logo home link or Login CTA is a likely unfilled placeholder
+- Cross-reference against the briefing's nav/footer sections — if the briefing specifies a real URL, flag this as HIGH
+- If the briefing doesn't specify a URL for that link, flag as MEDIUM (potential oversight)
+
 Flag any mismatch with severity HIGH.
 
 ---

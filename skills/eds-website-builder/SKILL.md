@@ -662,6 +662,11 @@ Complete these steps sequentially before spawning parallel agents:
 1. Generate images       → ./tools/generate-images.sh {sitename}
 2. Deploy to CDN         → ./tools/deploy-images.sh {sitename}
 3. Create nav + footer   → Write drafts/{sitename}/nav.plain.html & footer.plain.html
+   - Extract top-bar link URLs from briefing nav section (Contact Us, Login)
+   - Extract footer link URLs from briefing footer section (Privacy, Terms, Accessibility, AE reporting)
+   - Extract copyright line verbatim from briefing footer section
+   - Extract approval code and DOP from briefing
+   - Do NOT use placeholder /{sitename}/ URLs for links that the briefing specifies as external
 ```
 
 These produce the **shared context** that all pages need.
@@ -675,7 +680,9 @@ Shared context bundle:
 ├── CDN base URL          → https://{sitename}-images.pages.dev/
 ├── Site prefix           → /{sitename}/
 ├── Accordion content     → The prescribing info / AE reporting / references HTML
-│                           (identical on every page — extract once)
+│                           (identical on every page — generate once from briefing
+│                            sections 5/6/7, then include verbatim in every page agent's
+│                            context. Do NOT let individual agents re-generate this.)
 ├── Metadata block        → HTML pattern for page metadata
 ├── Block reference       → blocks/BLOCK-REFERENCE.md (markup patterns for all blocks)
 └── Image <picture> pattern → <picture><source type="image/webp" srcset="CDN_URL"><img src="CDN_URL" alt="..."></picture>
@@ -740,6 +747,13 @@ for (const page of pages) {
 ```bash
 grep -rn 'src="/' drafts/{sitename}/ --include='*.html' && echo "BLOCKED: fix local paths before uploading" || echo "OK: no local paths"
 ```
+
+**Step 1b — Verify no placeholder links in nav/footer** (blocks upload if any are found):
+```bash
+grep -Pn 'href="/{sitename}/"' drafts/{sitename}/nav.plain.html drafts/{sitename}/footer.plain.html | grep -v 'img src' | grep -v 'Login' && echo "BLOCKED: placeholder links found — replace with briefing URLs" || echo "OK: no placeholder links"
+```
+
+Nav/footer links that equal `/{sitename}/` (other than the logo home link and Login CTA) are likely unfilled placeholders. Cross-reference against the briefing's nav/footer sections and replace with the specified URLs.
 
 **Step 2 — Upload all drafts to DA** (including nav and footer):
 ```bash
