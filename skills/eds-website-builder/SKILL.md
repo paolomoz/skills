@@ -702,19 +702,59 @@ grep -oP 'href="\K[^"]+' drafts/nav.plain.html | grep -v '^#' | sort
 
 ---
 
+## Phase 7a: Sequential Page Generation (Single-Agent)
+
+When the main agent generates all pages itself (no subagents), follow the same shared context approach as Phase 7b but generate pages one at a time. This is the recommended path for sites with 6 or fewer pages.
+
+### Why sequential?
+
+- **Zero structural errors**: The main agent maintains context across pages, so block nesting is always correct. Parallel agents frequently produce broken nesting (content outside block divs), empty blocks, and metadata in `<head>` tags instead of metadata blocks.
+- **Accordion consistency guaranteed**: The main agent copies the same accordion HTML into every page without drift.
+- **Simpler debugging**: If a page has an issue, the main agent can fix it immediately instead of requiring a rewrite of a subagent's output.
+- **Fast enough for small sites**: A 6-page site takes ~3–5 minutes sequentially. The time savings from parallelism only matter at 8+ pages.
+
+### 7a.1 Prerequisites
+
+Same as Phase 7b.1 — generate images, deploy to CDN, verify CDN is live, then create nav and footer.
+
+### 7a.2 Shared Context
+
+Before generating any page, prepare the shared context bundle (same as Phase 7b.2):
+- CDN base URL
+- Accordion HTML (generated once from briefing sections 5/6/7)
+- Block reference (`blocks/BLOCK-REFERENCE.md`)
+- Image `<picture>` pattern
+
+### 7a.3 Generate Pages
+
+For each page in the briefing, write the `.plain.html` file using the briefing's copy verbatim. Copy the accordion HTML identically into every page. Use the block reference for correct nesting. Generate pages in any order.
+
+### 7a.4 Post-Generation
+
+Same as Phase 7b.4 — run all validation checks (CDN reachability, local paths, structural validation), then upload to DA, preview, and open.
+
+---
+
 ## Phase 7b: Parallel Page Generation (Briefing-Driven Sites)
 
-When a site has a complete briefing with final copy for every page, all pages can be generated concurrently using parallel agents. Each page is independent — same accordion, same CDN base, same block patterns — so no agent needs another agent's output.
+When a site has a complete briefing with final copy for every page and more than 6 pages, all pages can be generated concurrently using parallel agents. Each page is independent — same accordion, same CDN base, same block patterns — so no agent needs another agent's output.
 
 ### 7b.1 Prerequisites (Sequential)
 
-Complete these steps sequentially before spawning parallel agents:
+Complete these steps sequentially before spawning parallel agents. **Every step is mandatory — do not skip any step. If a step fails, stop and fix it before proceeding.**
 
 ```
 1. Generate images       → ./tools/generate-images.sh {sitename}
 2. Deploy to CDN         → ./tools/deploy-images.sh {sitename}
-3. Create nav + footer   → Write drafts/{sitename}/nav.plain.html & footer.plain.html
+3. Verify CDN is live    → curl -sI https://{sitename}-images.pages.dev/astrazeneca-logo.png | head -1
+                           Must return HTTP 200. If not, the CDN deployment failed — do not proceed.
+4. Create nav + footer   → Write drafts/{sitename}/nav.plain.html & footer.plain.html
+   - Extract the nav page list from the briefing's NAVIGATION SECTION, not from the full page inventory.
+     If the briefing lists fewer pages in nav than exist in the site, respect that — some pages may be
+     intentionally discoverable only via inline CTAs, not top-level navigation.
    - Extract top-bar link URLs from briefing nav section (Contact Us, Login)
+   - Extract footer site links from the briefing's FOOTER SECTION — use the same page list as specified
+     there, which may differ from the full page inventory.
    - Extract footer link URLs from briefing footer section (Privacy, Terms, Accessibility, AE reporting)
    - Extract copyright line verbatim from briefing footer section
    - Extract approval code and DOP from briefing
@@ -722,6 +762,8 @@ Complete these steps sequentially before spawning parallel agents:
 ```
 
 These produce the **shared context** that all pages need.
+
+**CRITICAL: Steps 1–3 (image generation, CDN deployment, CDN verification) MUST complete before creating any draft files.** All draft HTML references CDN image URLs. If the CDN doesn't exist, DA will fail to ingest images and they will appear broken on the live site. This is the single most common cause of broken images in production.
 
 ### 7b.2 Extract Shared Context Bundle
 
@@ -811,6 +853,28 @@ for (const page of pages) {
 ### 7b.4 Post-Generation: Upload, Preview, and Open (Sequential)
 
 **IMPORTANT: Execute all of these steps automatically** once all page agents complete. Do not wait for the user to ask — the whole point of parallel generation is an end-to-end pipeline that delivers a viewable site.
+
+**Step 0 — Verify CDN images are reachable** (blocks upload if any fail):
+
+This is the most critical pre-upload check. If the CDN is not live, every image on the site will be broken.
+
+```bash
+# Sample 3 image URLs from drafts and verify they return HTTP 200
+echo "--- CDN reachability check ---"
+FAILED=0
+for url in $(grep -oh 'https://[^"]*\.jpeg' drafts/{sitename}/*.plain.html | sort -u | head -3); do
+  code=$(curl -sI -o /dev/null -w '%{http_code}' "$url")
+  if [ "$code" = "200" ]; then
+    echo "OK ($code): $url"
+  else
+    echo "FAILED ($code): $url"
+    FAILED=1
+  fi
+done
+[ "$FAILED" = "1" ] && echo "BLOCKED: CDN images not reachable — run generate-images.sh and deploy-images.sh first" || echo "OK: CDN images verified"
+```
+
+If this check fails, **stop immediately**. Run `./tools/generate-images.sh {sitename}` and `./tools/deploy-images.sh {sitename}` before proceeding. Uploading to DA with unreachable image URLs produces broken images that persist until the content is re-uploaded after fixing.
 
 **Step 1 — Verify no local image paths** (blocks upload if any are found):
 ```bash

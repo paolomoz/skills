@@ -487,8 +487,99 @@ This is critical for recovery scenarios: if a page generation pipeline fails at 
 
 ---
 
+### Brand Style Brief Integration
+
+When a project includes a `brand/*-style-brief.md` or `brand/*-style-config.sh`, use the tier system to select appropriate style prefixes and negative prompts per image.
+
+**Tier System** (4 tiers + generic fallback):
+
+| Tier | Name | Use Case | Style |
+|------|------|----------|-------|
+| tier1 | Double-Exposure Artistic | Homepage heroes, therapy area cards | Human silhouette filled with scientific/natural imagery |
+| tier2 | Warm Lifestyle Photography | Product heroes, patient benefit sections | Natural-light photos of patients in everyday settings |
+| tier3 | Product & Device Photography | Dosing pages, device guides | Clean product shots on white/light backgrounds |
+| tier4 | Dramatic/Abstract Hero | Oncology heroes, severe disease products | Bold CGI, aurora borealis, dramatic landscapes |
+| (none) | Generic | Backwards-compatible default | Photorealistic pharmaceutical style |
+
+**How to apply tiers:**
+
+1. Check if `brand/az-image-style-config.sh` (or equivalent) exists in the project
+2. Each tier provides a `TIER{N}_PREFIX` (style instruction prepended to the prompt) and `TIER{N}_NEGATIVE` (appended as "Avoid: ..." clause)
+3. When generating image prompts, assign a tier based on block type and content:
+   - Hero blocks on homepage / therapy pages → tier1
+   - Hero blocks on product pages → tier2
+   - Product/device images → tier3
+   - Oncology / severe disease heroes → tier4
+   - Everything else → omit tier for generic fallback
+4. Include the tier as a parameter in the generation call (e.g., the 3rd arg to `generate_image` in bash scripts)
+
+**For TypeScript/Workers implementations**, read the style config and map tiers to prompt enhancement:
+
+```typescript
+interface TierConfig {
+  prefix: string
+  negative: string
+}
+
+function applyTier(prompt: string, tier: string, config: Record<string, TierConfig>): string {
+  const tierConfig = config[tier] || config.generic
+  let enhanced = `${tierConfig.prefix} ${prompt}`
+  if (tierConfig.negative) {
+    enhanced += `. Avoid: ${tierConfig.negative}.`
+  }
+  return enhanced
+}
+```
+
+---
+
+### Reference Image Grounding
+
+When `brand/reference-images/tier{1,2,3,4}/` directories exist with curated reference images, use them as multi-modal style references to improve brand alignment of generated images.
+
+**How it works:**
+
+1. For each generation request with a tier, check if `brand/reference-images/{tier}/` contains any images
+2. Randomly select one reference image from the tier directory (style grounding, not content matching — any image in the tier is valid for any prompt in that tier)
+3. Base64-encode the reference image and include it as an `inlineData` part in the multi-modal API payload
+4. Prepend "Generate an image matching the visual style of this reference." to the text prompt
+
+**For Gemini API (bash `generate-images.sh`):**
+
+The reference image is sent as the first part in the `contents` array:
+```json
+{
+  "contents": [{
+    "parts": [
+      {"inlineData": {"mimeType": "image/jpeg", "data": "<base64>"}},
+      {"text": "Generate an image matching the visual style of this reference. <tier prefix> <user prompt>"}
+    ]
+  }],
+  "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
+}
+```
+
+**For fal.ai FLUX / Imagen (TypeScript):**
+
+These providers don't support multi-modal reference input directly. Instead:
+- Use the reference image to enhance the text prompt via Gemini vision: send the reference + "Describe the visual style of this image in detail for an image generation prompt" → append the style description to the generation prompt
+- Alternatively, if using FLUX with LoRA, train on the reference images for stronger style consistency
+
+**Populating reference images:**
+
+Run `node tools/crawl-az-references.mjs` to crawl the brand website and auto-classify images into tiers. Then review `brand/reference-images/manifest.json` and reclassify as needed. Target: 3-5 images per tier.
+
+**Key rules:**
+- Reference images ground style, not content. A cardiovascular tier2 photo is valid for a respiratory tier2 generation
+- Random selection per generation call ensures variety while maintaining tier-consistent style
+- Always log which reference image was used (for debugging and reproducibility)
+- Reference images should be real brand photography, not AI-generated
+
+---
+
 ### Cross-References
 
 - **multi-provider-fallback** -- General multi-provider fallback patterns and health checking
 - **generative-page-pipeline** -- Stage 4 consumes this skill for parallel image generation during page creation
 - **cloudflare-fullstack** -- R2 bucket bindings, Workers AI configuration, and Vectorize setup
+- **brand-extractor** -- Extract brand profiles that can inform tier selection and colour injection
