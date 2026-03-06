@@ -7,7 +7,14 @@
         "I need real-time server push events to the browser",
         "Add event streaming with reconnection to my API"
       ],
-      "signals": ["EventSource", "ReadableStream", "text/event-stream", "TransformStream", "SSE", "server-sent"]
+      "signals": [
+        "EventSource",
+        "ReadableStream",
+        "text/event-stream",
+        "TransformStream",
+        "SSE",
+        "server-sent"
+      ]
     },
     "multi-model-orchestrator": {
       "description": "Orchestrate multi-stage AI pipelines routing tasks to optimal models by role",
@@ -16,7 +23,14 @@
         "I need to route prompts to different LLM models based on complexity",
         "Create an orchestrator that chains Claude and GPT for different stages"
       ],
-      "signals": ["ModelFactory", "pipeline", "orchestrat", "multi-model", "fallback chain", "stage"]
+      "signals": [
+        "ModelFactory",
+        "pipeline",
+        "orchestrat",
+        "multi-model",
+        "fallback chain",
+        "stage"
+      ]
     },
     "cloudflare-fullstack": {
       "description": "Build full-stack applications on Cloudflare Workers with KV, D1, R2, and Workers AI",
@@ -25,7 +39,15 @@
         "Create a serverless app with KV storage and R2 on Cloudflare",
         "Set up a Cloudflare Workers project with wrangler and D1 migrations"
       ],
-      "signals": ["wrangler", "Workers", "D1", "KV", "R2", "Vectorize", "Cloudflare"]
+      "signals": [
+        "wrangler",
+        "Workers",
+        "D1",
+        "KV",
+        "R2",
+        "Vectorize",
+        "Cloudflare"
+      ]
     },
     "session-context": {
       "description": "Track user session context across multi-turn interactions using sessionStorage and KV",
@@ -34,7 +56,14 @@
         "Implement conversation context that persists across page loads",
         "Track user journey stages with sessionStorage and KV caching"
       ],
-      "signals": ["SessionContextManager", "sessionStorage", "journey", "multi-turn", "TTL", "session"]
+      "signals": [
+        "SessionContextManager",
+        "sessionStorage",
+        "journey",
+        "multi-turn",
+        "TTL",
+        "session"
+      ]
     },
     "incremental-processor": {
       "description": "Process large datasets incrementally with hash-based change detection and state persistence",
@@ -43,7 +72,14 @@
         "I need resumable batch processing that skips unchanged items",
         "Create an incremental pipeline that detects file changes via hashing"
       ],
-      "signals": ["StateManager", "AnalysisIndex", "hash", "incremental", "resumable", "pacing"]
+      "signals": [
+        "StateManager",
+        "AnalysisIndex",
+        "hash",
+        "incremental",
+        "resumable",
+        "pacing"
+      ]
     },
     "multi-provider-fallback": {
       "description": "Abstract AI model providers behind unified interface with automatic fallback and synthesis",
@@ -52,7 +88,13 @@
         "Build a multi-provider abstraction for Claude, GPT, and Gemini",
         "I need automatic provider switching when one AI API fails"
       ],
-      "signals": ["provider", "fallback", "multi-provider", "model preset", "abstraction"]
+      "signals": [
+        "provider",
+        "fallback",
+        "multi-provider",
+        "model preset",
+        "abstraction"
+      ]
     },
     "railway-deploy": {
       "description": "Deploy monorepos to Railway with multiple services using Dockerfiles and config-as-code",
@@ -61,7 +103,13 @@
         "Set up Railway deployment with config-as-code for my services",
         "I need to deploy multiple services to Railway from a monorepo"
       ],
-      "signals": ["Railway", "Dockerfile", "deploy", "railway.json", "monorepo"]
+      "signals": [
+        "Railway",
+        "Dockerfile",
+        "deploy",
+        "railway.json",
+        "monorepo"
+      ]
     },
     "infographic-video": {
       "description": "Create meeting recap videos with infographics, two-host dialogue audio, and MP4 assembly",
@@ -70,7 +118,15 @@
         "Generate a meeting recap video with two-host dialogue",
         "Turn these meeting notes into a 5-minute video with infographics"
       ],
-      "signals": ["ElevenLabs", "dialogue", "infographic", "video", "meeting", "recap", "MP4"]
+      "signals": [
+        "ElevenLabs",
+        "dialogue",
+        "infographic",
+        "video",
+        "meeting",
+        "recap",
+        "MP4"
+      ]
     },
     "infographics-generate-style": {
       "description": "Generate reusable infographic style definitions from reference images, PPTX files, or brand guidelines",
@@ -79,7 +135,14 @@
         "Generate a style definition for my infographics based on our brand",
         "Extract an infographic style from this PowerPoint presentation"
       ],
-      "signals": ["style", "infographic", "Anti-Pattern", "visual element", "pre-flight", "reference"]
+      "signals": [
+        "style",
+        "infographic",
+        "Anti-Pattern",
+        "visual element",
+        "pre-flight",
+        "reference"
+      ]
     },
     "highlight-reel": {
       "description": "Create polished highlight reel videos from screen recordings with captions, transitions, and music",
@@ -88,7 +151,15 @@
         "Make a 60-second sizzle reel from my demo videos",
         "Build a product demo video with title cards and transitions from these clips"
       ],
-      "signals": ["Remotion", "highlight reel", "sizzle", "typewriter", "caption", "clip", "poster frame"]
+      "signals": [
+        "Remotion",
+        "highlight reel",
+        "sizzle",
+        "typewriter",
+        "caption",
+        "clip",
+        "poster frame"
+      ]
     },
     "screenshot-capture": {
       "description": "Capture full-page and viewport screenshots of URLs with Puppeteer and overlay removal",
@@ -97,7 +168,15 @@
         "Take viewport screenshots of my website for visual comparison",
         "Screenshot these pages and handle cookie consent banners automatically"
       ],
-      "signals": ["screenshot", "Puppeteer", "viewport", "overlay", "cookie consent", "lazy-load", "capture"]
+      "signals": [
+        "screenshot",
+        "Puppeteer",
+        "viewport",
+        "overlay",
+        "cookie consent",
+        "lazy-load",
+        "capture"
+      ]
     },
     "brand-extractor": {
       "description": "Extract brand identity profiles from websites including tone, positioning, colors, and typography",
@@ -106,7 +185,14 @@
         "Analyze the brand profile including tone and positioning for this company",
         "Build a comprehensive brand profile from this website URL"
       ],
-      "signals": ["BrandProfile", "brand", "tone", "positioning", "identity", "extraction"]
+      "signals": [
+        "BrandProfile",
+        "brand",
+        "tone",
+        "positioning",
+        "identity",
+        "extraction"
+      ]
     },
     "brand-css-generator": {
       "description": "Generate CSS custom properties and design tokens from brand profiles with WCAG AA contrast",
@@ -115,7 +201,15 @@
         "Create design tokens and a CSS theme from our brand colors",
         "Build WCAG AA compliant CSS variables from our brand identity"
       ],
-      "signals": ["CSS custom propert", "design token", "WCAG", "brand", "Mode A", "Mode B", "contrast"]
+      "signals": [
+        "CSS custom propert",
+        "design token",
+        "WCAG",
+        "brand",
+        "Mode A",
+        "Mode B",
+        "contrast"
+      ]
     },
     "figma-token-sync": {
       "description": "Bidirectionally sync CSS custom properties with Figma variables with CI drift detection",
@@ -124,7 +218,15 @@
         "Pull variables from Figma and sync them to CSS custom properties",
         "Run a diff to detect drift between our CSS tokens and Figma variables"
       ],
-      "signals": ["Figma", "PUSH", "PULL", "DIFF", "variable", "token sync", "alias"]
+      "signals": [
+        "Figma",
+        "PUSH",
+        "PULL",
+        "DIFF",
+        "variable",
+        "token sync",
+        "alias"
+      ]
     },
     "design-system-extractor": {
       "description": "Extract design systems from live websites by capturing computed styles, colors, typography, and spacing via Puppeteer",
@@ -133,7 +235,14 @@
         "Reverse-engineer the CSS tokens from https://example.com",
         "Extract the design system tokens from https://example.com including colors, typography, and spacing"
       ],
-      "signals": ["design system", "computed style", "heading hierarchy", "button variant", "layout token", "color palette"]
+      "signals": [
+        "design system",
+        "computed style",
+        "heading hierarchy",
+        "button variant",
+        "layout token",
+        "color palette"
+      ]
     },
     "generative-page-pipeline": {
       "description": "Generate complete HTML web pages from queries through a 5-stage pipeline with intent classification and block planning",
@@ -142,7 +251,14 @@
         "Create a page generation system with intent classification and content blocks",
         "Implement a generative page pipeline with RAG integration"
       ],
-      "signals": ["intent classif", "block planning", "page generat", "5-stage", "pipeline", "content generat"]
+      "signals": [
+        "intent classif",
+        "block planning",
+        "page generat",
+        "5-stage",
+        "pipeline",
+        "content generat"
+      ]
     },
     "conversational-page-builder": {
       "description": "Build interactive AI agents that create and refine web pages through multi-turn conversations",
@@ -151,7 +267,14 @@
         "Create an interactive AI agent that builds pages through conversation",
         "Implement a conversational page editor with real-time preview"
       ],
-      "signals": ["conversational", "agent", "multi-turn", "brand brief", "iterative", "phase"]
+      "signals": [
+        "conversational",
+        "agent",
+        "multi-turn",
+        "brand brief",
+        "iterative",
+        "phase"
+      ]
     },
     "ai-image-generator": {
       "description": "Generate AI images using fal.ai FLUX, Vertex Imagen, and Gemini with provider fallbacks and R2 caching",
@@ -160,7 +283,16 @@
         "Build an image generation service with caching and R2 storage",
         "Create a hero image generator with FLUX and Imagen fallbacks"
       ],
-      "signals": ["fal.ai", "FLUX", "Imagen", "Gemini", "image generat", "R2", "LoRA", "provider"]
+      "signals": [
+        "fal.ai",
+        "FLUX",
+        "Imagen",
+        "Gemini",
+        "image generat",
+        "R2",
+        "LoRA",
+        "provider"
+      ]
     },
     "da-content-pipeline": {
       "description": "Convert HTML to Document Authoring format and upload to AEM Edge Delivery Services",
@@ -169,7 +301,15 @@
         "Build a pipeline to convert plain HTML to Document Authoring format",
         "Upload content to DA with IMS authentication and trigger preview"
       ],
-      "signals": ["DA", "Document Authoring", "plain.html", "IMS", "preview", "publish", "AEM"]
+      "signals": [
+        "DA",
+        "Document Authoring",
+        "plain.html",
+        "IMS",
+        "preview",
+        "publish",
+        "AEM"
+      ]
     },
     "site-auditor": {
       "description": "Audit website content quality by cross-referencing sitemaps, navigation, and query indexes for gaps",
@@ -178,7 +318,15 @@
         "Run a site quality audit comparing query index, sitemap, and navigation",
         "Find orphan pages and content gaps across my website"
       ],
-      "signals": ["content gap", "sitemap", "navigation", "query index", "orphan", "audit", "metadata"]
+      "signals": [
+        "content gap",
+        "sitemap",
+        "navigation",
+        "query index",
+        "orphan",
+        "audit",
+        "metadata"
+      ]
     },
     "pagespeed-audit": {
       "description": "Run PageSpeed Insights and Core Web Vitals audits collecting LCP, CLS, INP, and RUM data across URLs",
@@ -187,7 +335,16 @@
         "Collect PageSpeed scores and CWV data for my site",
         "Benchmark performance with RUM data and PSI API for these pages"
       ],
-      "signals": ["Core Web Vitals", "CWV", "PageSpeed", "PSI", "RUM", "LCP", "CLS", "INP"]
+      "signals": [
+        "Core Web Vitals",
+        "CWV",
+        "PageSpeed",
+        "PSI",
+        "RUM",
+        "LCP",
+        "CLS",
+        "INP"
+      ]
     },
     "accessibility-auditor": {
       "description": "Run WCAG 2.1 AA accessibility audits with test case matrices, banned word detection, and content safety checks",
@@ -196,7 +353,15 @@
         "Test accessibility with standard, adversarial, and content safety test cases",
         "Audit this site for a11y issues including banned words and content safety"
       ],
-      "signals": ["WCAG", "accessibility", "a11y", "test case matri", "banned word", "content safety", "adversarial"]
+      "signals": [
+        "WCAG",
+        "accessibility",
+        "a11y",
+        "test case matri",
+        "banned word",
+        "content safety",
+        "adversarial"
+      ]
     },
     "block-detector": {
       "description": "Detect and catalog content blocks on web pages with bounding boxes, CSS selectors, and semantic analysis",
@@ -205,7 +370,14 @@
         "Extract page blocks with bounding boxes and CSS selectors",
         "Analyze the block structure of https://example.com with semantic block detection"
       ],
-      "signals": ["block detect", "bounding box", "CSS selector", "semantic", "data attribute", "class pattern"]
+      "signals": [
+        "block detect",
+        "bounding box",
+        "CSS selector",
+        "semantic",
+        "data attribute",
+        "class pattern"
+      ]
     },
     "content-graph": {
       "description": "Build content relationship graphs mapping semantic connections, orphan pages, hub nodes, and topic clusters",
@@ -214,7 +386,15 @@
         "Map content relationships and find orphan pages in my navigation",
         "Create a topic network with hub analysis from my query index"
       ],
-      "signals": ["content graph", "semantic", "node", "edge", "orphan", "hub", "topic cluster"]
+      "signals": [
+        "content graph",
+        "semantic",
+        "node",
+        "edge",
+        "orphan",
+        "hub",
+        "topic cluster"
+      ]
     },
     "data-intelligence-pipeline": {
       "description": "Build end-to-end Slack and document intelligence pipelines with KPI synthesis and dashboards",
@@ -223,7 +403,15 @@
         "Create an intelligence gathering pipeline that fetches, analyzes, and synthesizes data",
         "Build a Slack data pipeline that extracts messages, analyzes them, and synthesizes KPIs"
       ],
-      "signals": ["data pipeline", "intelligence", "Slack", "synthesis", "KPI", "extraction", "dashboard"]
+      "signals": [
+        "data pipeline",
+        "intelligence",
+        "Slack",
+        "synthesis",
+        "KPI",
+        "extraction",
+        "dashboard"
+      ]
     },
     "report-hub-generator": {
       "description": "Generate single-page HTML report hubs with interactive navigation, view toggles, and theming",
@@ -232,7 +420,33 @@
         "Create an analysis dashboard with grid/list/detail view toggles",
         "Build a report hub page with sidebar nav and consistent theming"
       ],
-      "signals": ["report hub", "report dashboard", "view toggle", "sidebar", "grid", "list", "detail", "status indicator"]
+      "signals": [
+        "report hub",
+        "report dashboard",
+        "view toggle",
+        "sidebar",
+        "grid",
+        "list",
+        "detail",
+        "status indicator"
+      ]
+    },
+    "demo-video": {
+      "description": "Build a narrated demo video from screen recording with voiceover, branded slides, and music",
+      "prompts": [
+        "Create a demo video from this screen recording with voiceover",
+        "Build a narrated product demo with intro slides and talk track",
+        "I have a screen recording and a script, make a demo video with AI voiceover"
+      ],
+      "signals": [
+        "demo video",
+        "voiceover",
+        "talk track",
+        "narrated",
+        "screencast",
+        "ElevenLabs",
+        "intro slide"
+      ]
     }
   },
   "negative": [

@@ -1,6 +1,6 @@
 # Claude Code Skills
 
-Personal collection of **26 reusable Claude Code skills** extracted from 12 production projects. Each skill encapsulates a proven pattern — from AI pipeline orchestration to brand extraction to accessibility auditing — as instructional prompts that Claude Code can follow.
+Personal collection of **27 reusable Claude Code skills** extracted from 12 production projects. Each skill encapsulates a proven pattern — from AI pipeline orchestration to brand extraction to accessibility auditing — as instructional prompts that Claude Code can follow.
 
 ## Skills Catalog
 
@@ -9,29 +9,30 @@ Personal collection of **26 reusable Claude Code skills** extracted from 12 prod
 | 1 | [railway-deploy](skills/railway-deploy/SKILL.md) | deploy | Deploy monorepos to Railway with Dockerfiles, config-as-code, and GraphQL API |
 | 2 | [infographic-video](skills/infographic-video/SKILL.md) | content | Transform meeting summaries into ~5 min videos with infographics and dialogue |
 | 3 | [infographics-generate-style](skills/infographics-generate-style/SKILL.md) | content | Generate infographic style definitions from reference material |
-| 4 | [highlight-reel](skills/highlight-reel/SKILL.md) | content | Create 60-90s polished highlight reels from screen recordings using Remotion |
-| 5 | [screenshot-capture](skills/screenshot-capture/SKILL.md) | content | Capture full-page and viewport screenshots with overlay removal |
-| 6 | [sse-streaming](skills/sse-streaming/SKILL.md) | patterns | SSE streaming from Cloudflare Workers with reconnection and state persistence |
-| 7 | [multi-model-orchestrator](skills/multi-model-orchestrator/SKILL.md) | patterns | Multi-stage AI pipelines with role-based model routing |
-| 8 | [cloudflare-fullstack](skills/cloudflare-fullstack/SKILL.md) | patterns | Full-stack apps on Cloudflare Workers with KV, D1, R2, Vectorize |
-| 9 | [session-context](skills/session-context/SKILL.md) | patterns | Multi-turn session tracking with sessionStorage and KV caching |
-| 10 | [incremental-processor](skills/incremental-processor/SKILL.md) | patterns | Hash-based change detection for resumable batch processing |
-| 11 | [multi-provider-fallback](skills/multi-provider-fallback/SKILL.md) | patterns | AI provider abstraction with automatic fallback and result synthesis |
-| 12 | [brand-extractor](skills/brand-extractor/SKILL.md) | brand-design | Extract brand profiles from URLs or descriptions using multi-tier AI analysis |
-| 13 | [brand-css-generator](skills/brand-css-generator/SKILL.md) | brand-design | Generate CSS custom property overrides from brand profiles |
-| 14 | [figma-token-sync](skills/figma-token-sync/SKILL.md) | brand-design | Bidirectional sync between CSS custom properties and Figma variables |
-| 15 | [design-system-extractor](skills/design-system-extractor/SKILL.md) | brand-design | Extract design tokens from live websites using Puppeteer |
-| 16 | [generative-page-pipeline](skills/generative-page-pipeline/SKILL.md) | page-generation | Multi-stage AI pipeline: query → intent → blocks → images → published page |
-| 17 | [conversational-page-builder](skills/conversational-page-builder/SKILL.md) | page-generation | Interactive AI agent loop for iterative page creation with Claude tool calling |
-| 18 | [ai-image-generator](skills/ai-image-generator/SKILL.md) | page-generation | Multi-provider image generation with fallbacks, caching, and R2 storage |
-| 19 | [da-content-pipeline](skills/da-content-pipeline/SKILL.md) | page-generation | Convert HTML to DA format and upload to AEM Edge Delivery Services |
-| 20 | [site-auditor](skills/site-auditor/SKILL.md) | audit | Cross-reference query indexes, sitemaps, and navigation for content gaps |
-| 21 | [pagespeed-audit](skills/pagespeed-audit/SKILL.md) | audit | Collect and analyze Core Web Vitals and PageSpeed scores |
-| 22 | [accessibility-auditor](skills/accessibility-auditor/SKILL.md) | audit | WCAG 2.1 AA compliance and content safety auditing |
-| 23 | [block-detector](skills/block-detector/SKILL.md) | audit | Detect and catalog content blocks on web pages using Puppeteer |
-| 24 | [content-graph](skills/content-graph/SKILL.md) | data-intelligence | Build semantic content graphs for navigation and recommendations |
-| 25 | [data-intelligence-pipeline](skills/data-intelligence-pipeline/SKILL.md) | data-intelligence | End-to-end pipeline: fetch → analyze → synthesize → dashboard |
-| 26 | [report-hub-generator](skills/report-hub-generator/SKILL.md) | data-intelligence | Generate single-page HTML report hubs with interactive navigation |
+| 4 | [demo-video](skills/demo-video/SKILL.md) | content | Build narrated demo videos from screen recordings with AI voiceover and branded slides |
+| 5 | [highlight-reel](skills/highlight-reel/SKILL.md) | content | Create 60-90s polished highlight reels from screen recordings using Remotion |
+| 6 | [screenshot-capture](skills/screenshot-capture/SKILL.md) | content | Capture full-page and viewport screenshots with overlay removal |
+| 7 | [sse-streaming](skills/sse-streaming/SKILL.md) | patterns | SSE streaming from Cloudflare Workers with reconnection and state persistence |
+| 8 | [multi-model-orchestrator](skills/multi-model-orchestrator/SKILL.md) | patterns | Multi-stage AI pipelines with role-based model routing |
+| 9 | [cloudflare-fullstack](skills/cloudflare-fullstack/SKILL.md) | patterns | Full-stack apps on Cloudflare Workers with KV, D1, R2, Vectorize |
+| 10 | [session-context](skills/session-context/SKILL.md) | patterns | Multi-turn session tracking with sessionStorage and KV caching |
+| 11 | [incremental-processor](skills/incremental-processor/SKILL.md) | patterns | Hash-based change detection for resumable batch processing |
+| 12 | [multi-provider-fallback](skills/multi-provider-fallback/SKILL.md) | patterns | AI provider abstraction with automatic fallback and result synthesis |
+| 13 | [brand-extractor](skills/brand-extractor/SKILL.md) | brand-design | Extract brand profiles from URLs or descriptions using multi-tier AI analysis |
+| 14 | [brand-css-generator](skills/brand-css-generator/SKILL.md) | brand-design | Generate CSS custom property overrides from brand profiles |
+| 15 | [figma-token-sync](skills/figma-token-sync/SKILL.md) | brand-design | Bidirectional sync between CSS custom properties and Figma variables |
+| 16 | [design-system-extractor](skills/design-system-extractor/SKILL.md) | brand-design | Extract design tokens from live websites using Puppeteer |
+| 17 | [generative-page-pipeline](skills/generative-page-pipeline/SKILL.md) | page-generation | Multi-stage AI pipeline: query → intent → blocks → images → published page |
+| 18 | [conversational-page-builder](skills/conversational-page-builder/SKILL.md) | page-generation | Interactive AI agent loop for iterative page creation with Claude tool calling |
+| 19 | [ai-image-generator](skills/ai-image-generator/SKILL.md) | page-generation | Multi-provider image generation with fallbacks, caching, and R2 storage |
+| 20 | [da-content-pipeline](skills/da-content-pipeline/SKILL.md) | page-generation | Convert HTML to DA format and upload to AEM Edge Delivery Services |
+| 21 | [site-auditor](skills/site-auditor/SKILL.md) | audit | Cross-reference query indexes, sitemaps, and navigation for content gaps |
+| 22 | [pagespeed-audit](skills/pagespeed-audit/SKILL.md) | audit | Collect and analyze Core Web Vitals and PageSpeed scores |
+| 23 | [accessibility-auditor](skills/accessibility-auditor/SKILL.md) | audit | WCAG 2.1 AA compliance and content safety auditing |
+| 24 | [block-detector](skills/block-detector/SKILL.md) | audit | Detect and catalog content blocks on web pages using Puppeteer |
+| 25 | [content-graph](skills/content-graph/SKILL.md) | data-intelligence | Build semantic content graphs for navigation and recommendations |
+| 26 | [data-intelligence-pipeline](skills/data-intelligence-pipeline/SKILL.md) | data-intelligence | End-to-end pipeline: fetch → analyze → synthesize → dashboard |
+| 27 | [report-hub-generator](skills/report-hub-generator/SKILL.md) | data-intelligence | Generate single-page HTML report hubs with interactive navigation |
 
 ## Categories
 
@@ -43,6 +44,7 @@ Skills for deploying applications to cloud platforms.
 ### content — Content Generation & Media
 Skills for generating videos, images, and visual content.
 
+- **demo-video** — Screen recording + script → narrated demo with AI voiceover and branded slides (ElevenLabs + ffmpeg)
 - **infographic-video** — Meeting summary → infographic video pipeline (ElevenLabs + Gemini)
 - **infographics-generate-style** — Style definition generator for infographic production
 - **highlight-reel** — Screen recording → polished demo video (Remotion)
