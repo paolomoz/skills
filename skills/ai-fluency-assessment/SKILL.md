@@ -120,13 +120,14 @@ This keeps only the top 10 projects by message count. Run the heuristic analysis
 Read the evidence samples from `.ai-fluency/evidence.json` and the heuristic results from `.ai-fluency/heuristic-analysis.json`. Score each behavior 1-5:
 
 **Scoring criteria (CEFR-aligned):**
-- **1 — A1 Breakthrough**: No evidence of this behavior
-- **2 — A2 Elementary**: Occasional or inconsistent evidence
-- **3 — B1 Intermediate**: Regular evidence but room for improvement
-- **4 — B2 Upper Intermediate**: Consistent, effective demonstration
-- **5 — C1 Advanced**: Sophisticated, nuanced mastery
+- **0–0.9 — A1 Breakthrough**: No evidence of this behavior
+- **1–1.9 — A2 Elementary**: Occasional or inconsistent evidence
+- **2–2.9 — B1 Intermediate**: Regular evidence but room for improvement
+- **3–3.89 — B2 Upper Intermediate**: Consistent evidence, some gaps
+- **3.9–4.49 — C1 Advanced**: Consistent, effective demonstration
+- **4.5–5.0 — C2 Mastery**: Sophisticated, nuanced mastery
 
-For +/- notation: 3.7-3.9 = B1+, 4.0-4.4 = B2, 4.5-4.9 = B2+/C1-. Overall and competency scores use CEFR levels (e.g., "B2 — Upper Intermediate AI Fluency"). Per-behavior scores show the CEFR code (A1, A2, B1, B2, C1) instead of raw numbers.
+Overall and competency scores use CEFR levels (e.g., "C1 — Advanced AI Fluency"). Per-behavior scores show the CEFR code instead of raw numbers: score 5 → C2, score 4 → C1, score 3 → B2, score 2 → A2, score 1 → A1.
 
 **For observable behaviors (1, 5, 7-15):** Base scores primarily on conversation evidence and heuristic analysis. Consider:
 - Heuristic match count (relative to other behaviors, NOT absolute percentage)
