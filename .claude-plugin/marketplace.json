@@ -91,6 +91,14 @@
       "skills": [
         "./skills/eds-website-builder"
       ]
+    },
+    {
+      "name": "sumi",
+      "description": "Generate artistic infographics from any topic using 57 curated art styles and 20 layout structures",
+      "source": "./",
+      "skills": [
+        "./skills/sumi"
+      ]
     }
   ]
 }
