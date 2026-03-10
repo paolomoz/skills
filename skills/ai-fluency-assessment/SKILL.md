@@ -119,12 +119,14 @@ This keeps only the top 10 projects by message count. Run the heuristic analysis
 
 Read the evidence samples from `.ai-fluency/evidence.json` and the heuristic results from `.ai-fluency/heuristic-analysis.json`. Score each behavior 1-5:
 
-**Scoring criteria:**
-- **1 - Novice**: No evidence of this behavior
-- **2 - Emerging**: Occasional or inconsistent evidence
-- **3 - Developing**: Regular evidence but room for improvement
-- **4 - Proficient**: Consistent, effective demonstration
-- **5 - Expert**: Sophisticated, nuanced mastery
+**Scoring criteria (CEFR-aligned):**
+- **1 — A1 Breakthrough**: No evidence of this behavior
+- **2 — A2 Elementary**: Occasional or inconsistent evidence
+- **3 — B1 Intermediate**: Regular evidence but room for improvement
+- **4 — B2 Upper Intermediate**: Consistent, effective demonstration
+- **5 — C1 Advanced**: Sophisticated, nuanced mastery
+
+For +/- notation: 3.7-3.9 = B1+, 4.0-4.4 = B2, 4.5-4.9 = B2+/C1-. Overall and competency scores use CEFR levels (e.g., "B2 — Upper Intermediate AI Fluency"). Per-behavior scores show the CEFR code (A1, A2, B1, B2, C1) instead of raw numbers.
 
 **For observable behaviors (1, 5, 7-15):** Base scores primarily on conversation evidence and heuristic analysis. Consider:
 - Heuristic match count (relative to other behaviors, NOT absolute percentage)
@@ -154,9 +156,9 @@ Generate a self-contained HTML report at `.ai-fluency/fluency-report.html`. The 
 
 1. **Header**: Title, date, overall score (large number with level label)
 
-2. **Overall Score Card**: Large score with Novice/Emerging/Developing/Proficient/Expert label. Compute as average of 4 competency scores.
+2. **Overall Score Card**: Large CEFR level (e.g., "B2") with "Upper Intermediate AI Fluency" label. Include numeric score and breakdown. Add a visual CEFR scale bar (A1→C2) with a "YOU" marker highlighting the current level.
 
-3. **4 Competency Summary Cards**: Each shows competency name, color-coded score, progress bar, and sub-competency breakdown. Score = average of sub-competency scores. Sub-competency score = average of behavior scores within it.
+3. **4 Competency Summary Cards**: Each shows competency name, numeric score, CEFR level (e.g., "B2 — Upper Intermediate"), color-coded progress bar. Score = average of sub-competency scores. Sub-competency score = average of behavior scores within it.
 
 4. **Strengths & Growth Areas**: Side-by-side cards showing top 3 strengths (highest-scored behaviors) and top 3 growth areas (lowest-scored behaviors with specific recommendations).
 
