@@ -99,6 +99,14 @@
       "skills": [
         "./skills/sumi"
       ]
+    },
+    {
+      "name": "testing",
+      "description": "Automated testing skills for browser extensions and E2E workflows",
+      "source": "./",
+      "skills": [
+        "./skills/extension-e2e-test"
+      ]
     }
   ]
 }
