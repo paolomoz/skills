@@ -12,9 +12,10 @@ Transforms a meeting summary (Markdown) into a short (~5 min) video with infogra
 ```
 Meeting Summary (.md)
   → Section Splitting (6 sections)
-  → Infographic Generation (1 per section, Nano Banana Pro)
-  → Dialogue Scripts (two-host, casual podcast tone, with bridge lines)
-  → Audio Generation (ElevenLabs Text-to-Dialogue API, 2 voices)
+  → Infographic Prompt Crafting (Sumi style+layout references → Claude)
+  → Infographic Generation (Gemini 3 Pro Image Preview)
+  → Dialogue Scripts (two-host, fast-paced podcast tone, with bridge lines)
+  → Audio Generation (ElevenLabs Text-to-Dialogue API, 2 voices, 1.0s lead-in silence, 1.2x speed)
   → Video Assembly (moviepy + background music → MP4)
 ```
 
@@ -53,14 +54,16 @@ Meeting Summary (.md)
 | `requests` | ElevenLabs API calls | `pip3 install requests` |
 | `python-dotenv` | Load API keys from `.env` | `pip3 install python-dotenv` |
 | `Pillow` | Title/outro card generation | `pip3 install Pillow` |
-| `google-genai` | Gemini 3 Pro Image (Nano Banana Pro) for infographics | `pip3 install google-genai` |
+| `google-genai` | Gemini 3 Pro Image Preview for infographics | `pip3 install google-genai` |
+| `anthropic` | Claude API for Sumi prompt crafting | `pip3 install anthropic` |
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
 | `ELEVENLABS_API_KEY` | ElevenLabs API key (required for audio) |
-| `GOOGLE_API_KEY` | Google AI API key (required for infographic generation) |
+| `GOOGLE_API_KEY` | Google AI API key (required for Gemini image generation) |
+| `ANTHROPIC_API_KEY` | Anthropic API key (required for Sumi prompt crafting) |
 
 ## Default Voices
 
@@ -106,6 +109,7 @@ Run `scripts/list_voices.py` to discover available ElevenLabs voices.
    ```bash
    grep ELEVENLABS_API_KEY .env
    grep GOOGLE_API_KEY .env
+   grep ANTHROPIC_API_KEY .env
    ```
 3. Create output directory structure
 
@@ -123,36 +127,45 @@ See `references/section-planning.md` for detailed guidelines.
 
 ### Step 3: Choose Layout × Style per Section
 
-Select a layout×style combination for each section's infographic. Vary styles across sections for visual interest.
+**Pick ONE style for all sections** for visual consistency. Vary **layouts only** across sections to match content type.
 
-**Recommended pairings by content type:**
+**Recommended layouts by content type:**
 
-| Content Type | Layout | Style |
-|--------------|--------|-------|
-| Overview / Intro | `bento-grid` | `corporate-memphis` |
-| Journey / Process | `winding-roadmap` | `storybook-watercolor` |
-| Core Concept / Mission | `hub-spoke` | `bold-graphic` |
-| Framework / Model | `linear-progression` | `technical-schematic` |
-| Metrics / KPIs | `dashboard` | `corporate-memphis` |
-| Future / Technology | `circular-flow` | `cyberpunk-neon` |
+| Content Type | Layout |
+|--------------|--------|
+| Overview / Intro | `bento-grid` |
+| Journey / Process | `winding-roadmap` |
+| Core Concept / Mission | `hub-spoke` |
+| Framework / Model | `linear-progression` |
+| Metrics / KPIs | `dashboard` |
+| Future / Technology | `circular-flow` |
 
-All infographics: **16:9 landscape** (2K via Nano Banana Pro).
+**Good style choices** (pick one and use for all 6 sections): `bold-graphic`, `corporate-memphis`, `technical-schematic`, `storybook-watercolor`.
+
+All infographics: **16:9 landscape** (1920×1080 or 2K equivalent).
 
 ### Step 4: Generate Infographics
 
-For each section, generate an infographic image using the `generate_infographic.py` script (Gemini 3 Pro Image / Nano Banana Pro):
+For each section, generate an infographic using Sumi prompt crafting + Gemini 3 Pro:
 
 ```bash
-python3 ${SKILL_DIR}/scripts/generate_infographic.py "Your detailed prompt here" \
-  --output {output}/infographic/{NN}-{slug}.png \
-  --aspect-ratio 16:9
+python3 ${SKILL_DIR}/scripts/generate_image.py \
+    {output}/sections/{NN}-{slug}/source.md \
+    {output}/infographic/{NN}-{slug}.png \
+    --layout {layout-id} --style {style-id}
 ```
 
-1. Write a detailed prompt describing the layout, style, and content
-2. Run `generate_infographic.py` with the prompt
-3. Verify output exists and is 16:9 aspect ratio
+The script:
+1. Loads the Sumi style + layout reference markdown files (57 styles × 20 layouts available)
+2. Sends them to Claude alongside the section content to craft a rich visual prompt
+3. Passes the crafted prompt to Gemini 3 Pro Image Preview for generation
+4. Saves the prompt to `{NN}-{slug}.prompt.md` for debugging
 
-Generate sequentially (one at a time) to ensure quality.
+**Use the same `--style` for all sections** (vary `--layout` only).
+
+Generate sequentially (one at a time) to ensure quality. Verify output exists and is 16:9 aspect ratio.
+
+Sumi references are loaded from `/Users/paolo/playground/sumi/backend/sumi/references/data/` (override with `--sumi-dir`).
 
 ### Step 5: Write Dialogue Scripts
 
@@ -177,8 +190,8 @@ Write casual two-host dialogue for each section and save as `{output}/dialogue.j
 - Two hosts with contrasting roles:
   - **Host A** (Alex): Warm narrator/guide — explains, sets context, delivers key facts
   - **Host B** (Jordan): Energetic reactor/questioner — asks questions, reacts, highlights takeaways
-- Casual podcast-recap tone, conversational and accessible
-- ~130-160 words per section targeting ~50s audio each
+- Fast-paced podcast-recap tone — punchy, high-density, no filler
+- ~100-130 words per section targeting ~35-45s audio each (before 1.2x speed-up)
 - Alternate turns between hosts (5-9 turns per section)
 - Use natural emotional cues through word choice (not bracketed directives)
 - **Bridge lines**: Every section except the last must end with a bridge line from Alex previewing the next topic
@@ -213,10 +226,13 @@ python3 ${SKILL_DIR}/scripts/generate_dialogue.py {output}/dialogue.json {output
 1. Reads dialogue from the JSON file
 2. For each section, sends all dialogue turns to the ElevenLabs Text-to-Dialogue API in a single request
 3. The API returns one audio file per section with natural turn-taking and pacing
-4. No silence gaps or ffmpeg concatenation needed — the API handles pacing natively
+4. Prepends 1.0s of silence via ffmpeg so dialogue doesn't start abruptly on crossfade transitions
+5. Speeds up audio by 20% (atempo=1.2) for faster-paced delivery
+
+**IMPORTANT ffmpeg note:** When generating silence with `-f lavfi`, the `-t` duration flag must come BEFORE `-i` to bound the source. Placing it after creates an unbounded silence source.
 
 **Verification:**
-- Each MP3 should be 40-65s duration
+- Each MP3 should be 30-50s duration (after 1.2x speed-up)
 - Total audio should be under 6 minutes
 - Both voices should be clearly distinguishable
 

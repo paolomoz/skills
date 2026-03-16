@@ -19,6 +19,10 @@ The dialogue.json file should have this structure:
 
 Uses the Text-to-Dialogue API (POST /v1/text-to-dialogue) which produces a single
 audio file per section with natural turn-taking and pacing between speakers.
+
+Post-processing:
+- Prepends 1.0s silence so audio doesn't start abruptly on slide transitions
+- Speeds up audio by 20% (atempo=1.2) for faster-paced delivery
 """
 
 import argparse
@@ -41,6 +45,9 @@ DEFAULT_VOICES = {
 DIALOGUE_URL = "https://api.elevenlabs.io/v1/text-to-dialogue"
 MODEL_ID = "eleven_v3"
 
+LEAD_IN_SILENCE = 1.0   # seconds of silence before dialogue starts
+SPEED_FACTOR = 1.2       # 20% faster playback
+
 
 # ── Audio Generation ──────────────────────────────────────────────────────────
 def generate_dialogue_audio(
@@ -50,6 +57,10 @@ def generate_dialogue_audio(
 
     Sends all turns for a section in one request. The API returns a single
     audio file with natural pacing between speakers.
+
+    Post-processing via ffmpeg:
+    1. Prepend 1.0s silence (so dialogue doesn't start abruptly on crossfade)
+    2. Speed up by 20% (atempo=1.2) for faster-paced delivery
     """
     inputs = []
     for turn in dialogue:
@@ -78,8 +89,27 @@ def generate_dialogue_audio(
         timeout=120,
     )
     resp.raise_for_status()
-    output_path.write_bytes(resp.content)
-    print(f"    Generated: {output_path.name} ({len(resp.content) / 1024:.1f} KB)")
+
+    # Write raw API response to temp file
+    raw_path = output_path.with_suffix(".raw.mp3")
+    raw_path.write_bytes(resp.content)
+
+    # Prepend silence + speed up via ffmpeg
+    # IMPORTANT: -t must come BEFORE -i for lavfi sources to bound their duration
+    subprocess.run(
+        [
+            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+            "-f", "lavfi", "-t", str(LEAD_IN_SILENCE), "-i", "anullsrc=r=44100:cl=stereo",
+            "-i", str(raw_path),
+            "-filter_complex",
+            f"[0][1]concat=n=2:v=0:a=1[joined];[joined]atempo={SPEED_FACTOR}",
+            "-c:a", "libmp3lame", "-q:a", "2",
+            str(output_path),
+        ],
+        check=True,
+    )
+    raw_path.unlink()
+    print(f"    Generated: {output_path.name} ({output_path.stat().st_size / 1024:.1f} KB, +{LEAD_IN_SILENCE}s lead-in, {SPEED_FACTOR}x speed)")
 
 
 def get_duration(audio_path: Path) -> float:
@@ -134,6 +164,7 @@ def main():
     print("=" * 60)
     print("  ElevenLabs Text-to-Dialogue Generator")
     print("  Two-host conversation (Alex & Jordan)")
+    print(f"  Lead-in silence: {LEAD_IN_SILENCE}s | Speed: {SPEED_FACTOR}x")
     print("=" * 60)
 
     total_duration = 0.0
