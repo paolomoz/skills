@@ -92,67 +92,12 @@ The build script skips existing artifacts. To rebuild a specific act:
 3. Delete the final video (`aem-demo.mp4`)
 4. Re-run `build.py`
 
-## Critical Rules (Lessons Learned)
+## Reference
 
-### Audio
+Detailed technical reference is split into supplementary files — consult as needed during the build:
 
-1. **NEVER overlap music and voice.** Music plays only during intro/outro slides. Voice-only during video acts. No background music under narration.
-
-2. **Intro music structure:** Music fades in and fades out within its duration (e.g., 5s), THEN voice starts. Use `atrim` to cut music to exact duration, `afade` for fade in/out, then `amix` with the delayed VO. Since music ends before VO starts, there is no overlap.
-   ```
-   [music]atrim=0:5,afade=t=in:st=0:d=2.5,afade=t=out:st=2.5:d=2.5,volume=0.35[music];
-   [vo]adelay=5000|5000[vo];
-   [music][vo]amix=inputs=2:duration=longest:normalize=0[aout]
-   ```
-
-3. **All segments MUST output stereo audio (2 channels).** ElevenLabs outputs mono MP3. If some segments are mono and others stereo, concatenation produces audio glitches (voice from one side, artifacts on the other). Fix with `pan=stereo|c0=c0|c1=c0` in the filter chain and `-ac 2` in output flags.
-
-4. **Add 300ms voice delay in video segments.** Without a delay, the voice starts slightly before the visual transition at act boundaries. Use `adelay=300|300` at the start of the VO filter chain.
-
-5. **Full audio filter chain for video segments:**
-   ```
-   [1:a]adelay=300|300,aresample=async=1,apad=pad_dur={duration},pan=stereo|c0=c0|c1=c0[aout]
-   ```
-
-### Video
-
-6. **Freeze-frame extension.** When VO is longer than the video segment, pad with last frame using `tpad=stop_mode=clone:stop_duration={pad_time}`.
-
-7. **Scale and pad to target resolution.** Source video may not be 1920x1080:
-   ```
-   scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2
-   ```
-
-8. **Consistent encoding across all segments.** Every segment must use:
-   ```
-   -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -r 25
-   -c:a aac -ac 2 -b:a 192k
-   ```
-
-### Concatenation
-
-9. **Always re-encode on concat.** Using `-c copy` with concat causes audio/video sync drift at segment boundaries. Always re-encode:
-   ```
-   ffmpeg -y -f concat -safe 0 -i concat.txt \
-     -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -r 25 \
-     -c:a aac -ac 2 -b:a 192k output.mp4
-   ```
-
-### Slides
-
-10. **Use PIL (Pillow) for slide generation, not ffmpeg drawtext.** macOS ffmpeg often lacks the freetype/drawtext filter. PIL with system fonts (`/System/Library/Fonts/Helvetica.ttc`) works reliably.
-
-11. **Logo color inversion for outro.** If the source logo is colored on transparent, iterate pixels and set all non-transparent pixels to white (or desired color) while preserving alpha.
-
-### TTS / Voice
-
-12. **Voice selection workflow.** Generate 2-3 voice samples of act 1 script before committing to a voice. Let user compare.
-
-13. **ElevenLabs speed parameter.** Range 0.7-1.2, default 1.0. If user wants faster/slower delivery, adjust via the `speed` field in the API request JSON (not voice_settings).
-
-14. **Voice consistency.** Store the chosen voice ID in the build script. When changing voice, delete ALL `audio/act*.mp3` files and ALL `segments/*.mp4` files to force full regeneration. Cached audio from a previous voice will silently persist otherwise.
-
-15. **Script length vs. segment duration.** Target ~2.5 words/second for natural narration pace. For a 15s video segment, aim for ~37 words. Generate TTS and check actual duration — ElevenLabs varies by voice and content.
+- **[FFMPEG_REFERENCE.md](./FFMPEG_REFERENCE.md)** — Audio filter chains, video scaling, encoding settings, concatenation rules, and slide generation tips
+- **[ELEVENLABS.md](./ELEVENLABS.md)** — TTS API usage, voice selection workflow, speed tuning, pacing guidelines, and recommended voices
 
 ## Workflow
 
@@ -230,25 +175,4 @@ Common adjustments (delete affected files and re-run):
 
 Requires `ELEVENLABS_API_KEY` in `.env` file.
 
-## ElevenLabs API Reference
-
-### List voices
-```bash
-curl -H "xi-api-key: $KEY" https://api.elevenlabs.io/v1/voices
-```
-
-### Generate speech
-```bash
-curl -X POST "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}" \
-  -H "xi-api-key: $KEY" -H "Content-Type: application/json" \
-  -d '{"text": "...", "model_id": "eleven_multilingual_v2",
-       "voice_settings": {"stability": 0.6, "similarity_boost": 0.8, "style": 0.15}}'
-```
-
-### Recommended voices for product demos
-| Voice | ID | Style |
-|-------|----|-------|
-| Eric | `cjVigY5qzO86Huf0OWal` | Smooth, trustworthy |
-| Daniel | `onwK4e9ZLuTAKqWW03F9` | Steady broadcaster |
-| Brian | `nPczCjzI2devNBz1zQrb` | Deep, resonant |
-| George | `JBFqnCBsd6RMkjVDRZzb` | Warm storyteller |
+See [ELEVENLABS.md](./ELEVENLABS.md) for API reference and voice recommendations.
