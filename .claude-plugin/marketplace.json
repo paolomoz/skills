@@ -107,6 +107,14 @@
       "skills": [
         "./skills/extension-e2e-test"
       ]
+    },
+    {
+      "name": "snowflake-cms",
+      "description": "Support for bespoke, art-directed, designer-generated pages on Adobe Edge Delivery Services — the snowflake pages that don't fit the standard block model.",
+      "source": "./",
+      "skills": [
+        "./skills/deploy"
+      ]
     }
   ]
 }
