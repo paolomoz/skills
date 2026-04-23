@@ -70,18 +70,49 @@ Act 3 (0:16-0:45): The agent reads the briefing and gets to work...
 - ElevenLabs voice name/ID (ask user to pick from samples if unsure)
 - Generate 2-3 samples of act 1 script for comparison before committing
 
+## Script Writing Methodology
+
+The build pipeline assumes a finished script. Writing that script well is a separate discipline — generic scripts feel dubbed, synced scripts feel alive. Run this process before the build.
+
+### 1. Extract frames at high frequency
+Use `ffmpeg -vf "fps=1/2,scale=800:-1"` — every 2s for transition-heavy videos, every 5s for simple ones. Read every frame visually to build a precise timeline.
+
+### 2. Build a frame-analysis table
+Map timestamps → screen content → production notes. Save as `frame-analysis.md` alongside the script. This is the source of truth for act boundaries.
+
+### 3. Read the brand's voice guidelines before writing
+Extract: banned words, preferred vocabulary, sentence rhythm, anti-traits. Don't invent a tone — match it. A "cheeky" first draft often has to be completely rewritten once the brand's actual voice is in view.
+
+### 4. Identify structural transitions
+Mark exact timestamps where the UI changes (panels appearing/disappearing, page changes, loading states). These become act boundaries with deliberate pauses and narration bridges.
+
+### 5. Reference specific on-screen elements, not generic descriptions
+Mention the exact product name, the exact UI element ("See the interest bars?"), the exact text on screen ("Five forty-five a.m."). This is what makes narration feel synced rather than dubbed.
+
+### 6. Handle visual transitions explicitly in the talk track
+When a new UI element appears, the narration should prime the viewer ("let me show you what I see") → 0.5s pause → element appears. When it disappears, the last line should land on it → 0.5s pause → resume.
+
+### 7. Word-count budget: ~2.5 words/second
+Count words per act, compare against act duration. Over-length acts need trimming or freeze-frame extension.
+
+### 8. Save the script as `script.md`
+Include: metadata (source video, duration, character, tone), brand voice rules, and each act with timestamps + on-screen description + narration + production notes.
+
 ## Architecture
 
 ### Build Directory Structure
 
 ```
 build-demo/
-  audio/          # TTS voiceover MP3 per act
-  images/         # Generated slide PNGs
-  segments/       # Assembled MP4 per act
-  concat.txt      # ffmpeg concat manifest
-  build.py        # Build script
-  aem-demo.mp4    # Final output
+  frames/            # Extracted frames for analysis (step 1)
+  frame-analysis.md  # Timeline mapping timestamps to screen content (step 2)
+  script.md          # Talk track script (step 8)
+  audio/             # TTS voiceover MP3 per act
+  images/            # Generated slide PNGs
+  segments/          # Assembled MP4 per act
+  concat.txt         # ffmpeg concat manifest
+  build.py           # Build script
+  aem-demo.mp4       # Final output
 ```
 
 ### Incremental Builds
@@ -103,7 +134,7 @@ Detailed technical reference is split into supplementary files — consult as ne
 
 ### Step 1: Gather Input
 1. Get screen recording path, run `ffprobe` for specs
-2. Get talk track script with act timelines
+2. Get talk track script with act timelines — if the script doesn't exist yet, run the [Script Writing Methodology](#script-writing-methodology) first
 3. Get intro/outro slide content
 4. Get music file path
 5. Get voice preference (or generate samples)
