@@ -9,9 +9,21 @@ Assess a user's AI fluency based on Anthropic's 4D AI Fluency Framework (Dakan, 
 
 ## Source Code
 
-The assessment tool lives at `/Users/paolo/playground/ai-fluency/`. All Python modules are under `src/ai_fluency/`. Run commands with `PYTHONPATH=/Users/paolo/playground/ai-fluency/src python3 -m ai_fluency`.
+The assessment tool is open-source at https://github.com/paolomoz/ai-fluency. The skill expects it cloned to `~/.cache/ai-fluency` and all Python modules under `src/ai_fluency/`. Commands use `PYTHONPATH=~/.cache/ai-fluency/src python3 -m ai_fluency`.
 
 ## Instructions
+
+### Step 0: Ensure the tool is installed
+
+Before any other step, make sure the tool is available locally. Clone on first run; pull the latest on subsequent runs.
+
+```bash
+if [ ! -d ~/.cache/ai-fluency ]; then
+  git clone https://github.com/paolomoz/ai-fluency.git ~/.cache/ai-fluency
+else
+  git -C ~/.cache/ai-fluency pull --ff-only
+fi
+```
 
 ### Step 1: Collect Evidence
 
@@ -19,13 +31,13 @@ Run the evidence collector. It scans three sources:
 
 ```bash
 # Claude Code sessions (automatic — reads ~/.claude/projects/)
-PYTHONPATH=/Users/paolo/playground/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000
+PYTHONPATH=~/.cache/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000
 
 # With Claude.ai export (if user provides path)
-PYTHONPATH=/Users/paolo/playground/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --claude-export <PATH_TO_EXPORT>
+PYTHONPATH=~/.cache/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --claude-export <PATH_TO_EXPORT>
 
 # With git repos (scan parent directories for repos one level deep)
-PYTHONPATH=/Users/paolo/playground/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --scan-dirs ~/projects ~/work
+PYTHONPATH=~/.cache/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --scan-dirs ~/projects ~/work
 ```
 
 **Important:** Use `--max-sessions 2000` (not 100) to capture all sessions. Many session files are subagent files with no user messages, so even with 2000 files the scan is fast.
@@ -41,7 +53,7 @@ Evidence is saved to `.ai-fluency/evidence.json` in the current working director
 Run the full-coverage heuristic analyzer on all collected messages. This checks every message against regex patterns for the 11 observable behaviors.
 
 ```bash
-cd /Users/paolo/playground/ai-fluency
+cd ~/.cache/ai-fluency
 PYTHONPATH=src python3 -c "
 from pathlib import Path
 from ai_fluency.heuristics import analyze_all_messages, print_summary
@@ -68,7 +80,7 @@ See [QUESTIONNAIRE.md](./QUESTIONNAIRE.md) for the full list of questions and ho
 If the user wants to focus on their best/most representative projects, re-collect with `--top-projects`:
 
 ```bash
-PYTHONPATH=/Users/paolo/playground/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --top-projects 10
+PYTHONPATH=~/.cache/ai-fluency/src python3 -m ai_fluency collect --max-sessions 2000 --top-projects 10
 ```
 
 This keeps only the top 10 projects by message count. Run the heuristic analysis again after filtering. Consider showing both all-projects and top-projects views in the report for a fuller picture.
@@ -101,7 +113,7 @@ open .ai-fluency/fluency-report.html
 
 | Problem | Fix |
 |---------|-----|
-| `No module named ai_fluency` | Set `PYTHONPATH=.../ai-fluency/src` before the command |
+| `No module named ai_fluency` | Set `PYTHONPATH=~/.cache/ai-fluency/src` before the command (or re-run Step 0 to clone the repo) |
 | 0 messages found | Check `~/.claude/projects/` exists with JSONL files |
 | Questionnaire hangs | Ask in chat, save programmatically (see QUESTIONNAIRE.md) |
 | Bars look like bad scores | Use relative scaling and absolute counts (see DESIGN.md) |

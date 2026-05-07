@@ -31,7 +31,7 @@ Ask in conversation (don't run the interactive CLI — it doesn't work through C
 After collecting responses, save with:
 
 ```bash
-cd /Users/paolo/playground/ai-fluency
+cd ~/.cache/ai-fluency
 PYTHONPATH=src python3 -c "
 import json
 from pathlib import Path
